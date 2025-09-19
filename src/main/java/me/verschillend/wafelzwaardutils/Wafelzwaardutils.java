@@ -26,7 +26,7 @@ public class Wafelzwaardutils extends JavaPlugin {
 
         // Initialize GUI
         BwGUI = new BwGUI(this);
-        CCGUI = new BwGUI(this);
+        CCGUI = new CCGUI(this);
 
         // Register commands
         getCommand("bw").setExecutor(new Commands(BwGUI));
@@ -52,7 +52,10 @@ public class Wafelzwaardutils extends JavaPlugin {
         return databaseManager;
     }
 
-    public ExampleGUI getExampleGUI() {
-        return exampleGUI;
+    public CCGUI getCCGUI() {
+        return CCGUI;
+    }
+    public BwGUI getBwGUI() {
+        return BwGUI;
     }
 }

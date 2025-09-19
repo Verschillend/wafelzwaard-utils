@@ -4,3 +4,11 @@ database:
   name: "wafelz"
   username: "luckperms"
   password: ""
+
+gui:
+  title: "Chat Colors"
+  size: 36
+
+gui2:
+  title: "Mode Selector"
+  size: 27
