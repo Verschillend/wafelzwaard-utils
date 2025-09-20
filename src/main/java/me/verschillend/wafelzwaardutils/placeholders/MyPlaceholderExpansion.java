@@ -52,13 +52,25 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
                 String bedwars = PlaceholderAPI.setPlaceholders(player, "%bungee_bedwars-1%");
                 String fbf = PlaceholderAPI.setPlaceholders(player, "%bungee_fireball-fight-1%");
                 String practice = PlaceholderAPI.setPlaceholders(player, "%bungee_practice%");
-                int result = (Integer.parseInt(bedwars) + Integer.parseInt(fbf) + Integer.parseInt(practice));
-                return Integer.toString(result);
+
+                int total = safeInt(bedwars) + safeInt(fbf) + safeInt(practice);
+                return String.valueOf(total);
             } catch (Exception e) {
                 return "0";
             }
         }
 
         return null;
+    }
+
+    private int safeInt(String value) {
+        if (value == null || value.trim().isEmpty() || value.startsWith("%")) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 }

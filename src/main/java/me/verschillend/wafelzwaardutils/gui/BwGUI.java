@@ -16,11 +16,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class BwGUI implements Listener {
 
     private final Wafelzwaardutils plugin;
-    private final String GUI_TITLE = "§aGamemode selector";
+    private final String GUI_TITLE = "§6§lGamemode selector";
 
     public BwGUI(Wafelzwaardutils plugin) {
         this.plugin = plugin;
@@ -32,11 +33,23 @@ public class BwGUI implements Listener {
 
         String bedwars = PlaceholderAPI.setPlaceholders(player, "%bungee_bedwars-1%");
         String fbf = PlaceholderAPI.setPlaceholders(player, "%bungee_fireball-fight-1%");
-        gui.setItem(11, createItem(Material.RED_BED, "§aBedwars", "\n§e§lPlayers online: " + bedwars));
-        gui.setItem(15, createItem(Material.FIRE_CHARGE, "§aFireball Fight", "\n§e§lPlayers online: " + fbf));
+
+        gui.setItem(11, createItem(Material.RED_BED, "§aBedwars",
+                "", "§e§lPlayers online: " + bedwars));
+        gui.setItem(15, createItem(Material.FIRE_CHARGE, "§aFireball Fight",
+                "", "§e§lPlayers online: " + fbf));
         gui.setItem(13, createItem(Material.BARRIER, "§aPractice", "\n§7This mode is coming soon!"));
 
         player.openInventory(gui);
+    }
+
+    private ItemStack createItem(Material material, String name, String lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(Arrays.asList(lore));
+        item.setItemMeta(meta);
+        return item;
     }
 
     private ItemStack createItem(Material material, String name, String... lore) {
@@ -44,6 +57,15 @@ public class BwGUI implements Listener {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack createItem(Material material, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
     }

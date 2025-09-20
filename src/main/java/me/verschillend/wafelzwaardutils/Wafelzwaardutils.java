@@ -74,6 +74,15 @@ public class Wafelzwaardutils extends JavaPlugin {
             Location loc = new Location(world, -212.5, 74.0, 147.5, 180, 0);
             event.getPlayer().teleport(loc);
         }
+        this.getDatabaseManager().getPlayerColor(event.getPlayer().getUniqueId()).thenAccept(color -> {
+            if (color == 0) {
+                this.getDatabaseManager().savePlayerData(
+                        event.getPlayer().getUniqueId(),
+                        event.getPlayer().getName(),
+                        '7'
+                );
+            }
+        });
     }
 
     private void registerCommands() {
