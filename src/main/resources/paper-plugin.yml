@@ -10,6 +10,8 @@ commands:
     usage: /bw
   chatcolor:
     usage: /chatcolor
+  spawn:
+    usage: /spawn [<player>]
 
 dependencies:
   server:

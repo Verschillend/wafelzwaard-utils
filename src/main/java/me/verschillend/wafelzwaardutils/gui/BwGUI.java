@@ -1,6 +1,9 @@
 package me.verschillend.wafelzwaardutils.gui;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import me.verschillend.wafelzwaardutils.*;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 import java.util.Arrays;
 
@@ -26,10 +30,11 @@ public class BwGUI implements Listener {
     public void openGUI(Player player) {
         Inventory gui = Bukkit.createInventory(null, 27, GUI_TITLE);
 
-        gui.setItem(10, createItem(Material.DIAMOND, "§bAdd Points", "§7Click to add 10 points"));
-        gui.setItem(12, createItem(Material.EMERALD, "§aView Points", "§7Click to see your points"));
-        gui.setItem(14, createItem(Material.REDSTONE, "§cRemove Points", "§7Click to remove 5 points"));
-        gui.setItem(16, createItem(Material.BARRIER, "§cClose", "§7Click to close this GUI"));
+        String bedwars = PlaceholderAPI.setPlaceholders(player, "%bungee_bedwars-1%");
+        String fbf = PlaceholderAPI.setPlaceholders(player, "%bungee_fireball-fight-1%");
+        gui.setItem(11, createItem(Material.RED_BED, "§aBedwars", "\n§e§lPlayers online: " + bedwars));
+        gui.setItem(15, createItem(Material.FIRE_CHARGE, "§aFireball Fight", "\n§e§lPlayers online: " + fbf));
+        gui.setItem(13, createItem(Material.BARRIER, "§aPractice", "\n§7This mode is coming soon!"));
 
         player.openInventory(gui);
     }
@@ -57,16 +62,31 @@ public class BwGUI implements Listener {
         String itemName = clickedItem.getItemMeta().getDisplayName();
 
         switch (itemName) {
-            case "§bAdd Points" -> {
+            case "§aBedwars" -> {
+                player.closeInventory();
+                player.sendMessage(Component.text("§8Sending you to bedwars..."));
 
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF("bedwars-1");
+
+                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
             }
-            case "§aView Points" -> {
-                //test2
+            case "§aFireball Fight" -> {
+                player.closeInventory();
+                player.sendMessage(Component.text("§8Sending you to fireball fight..."));
+
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("Connect");
+                out.writeUTF("fireball-fight-1");
+
+                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
             }
-            case "§cRemove Points" -> {
-                //test
+            case "§aPractice" -> {
+                player.closeInventory();
+                player.sendMessage("§cThis mode is not finished yet!");
             }
-            case "§cClose" -> player.closeInventory();
+            //case "§cClose" -> player.closeInventory();
         }
     }
 }

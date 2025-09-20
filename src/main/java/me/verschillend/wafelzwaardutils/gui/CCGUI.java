@@ -58,23 +58,23 @@ public class CCGUI implements Listener {
 
         switch (itemName) {
             case "§bAdd Points" -> {
-                plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(currentPoints -> {
+                /*plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(currentPoints -> {
                     int newPoints = currentPoints + 10;
                     plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), newPoints);
                     player.sendMessage("§a+10 points! You now have " + newPoints + " points.");
-                });
+                });*/
             }
             case "§aView Points" -> {
-                plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(points -> {
+                /*plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(points -> {
                     player.sendMessage("§eYou have §6" + points + "§e points!");
-                });
+                });*/
             }
             case "§cRemove Points" -> {
-                plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(currentPoints -> {
+                /*plugin.getDatabaseManager().getPlayerColor(player.getUniqueId()).thenAccept(currentPoints -> {
                     int newPoints = Math.max(0, currentPoints - 5);
                     plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), newPoints);
                     player.sendMessage("§c-5 points! You now have " + newPoints + " points.");
-                });
+                });*/
             }
             case "§cClose" -> player.closeInventory();
         }

@@ -5,6 +5,9 @@ database:
   username: "luckperms"
   password: ""
 
+server:
+  lobby: false
+
 gui:
   title: "Chat Colors"
   size: 36
