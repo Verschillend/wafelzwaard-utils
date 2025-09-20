@@ -5,13 +5,19 @@ api-version: '1.21'
 description: Verschillends wafelzwaard utils plugin
 author: Verschillend
 
-commands:
-  bw:
-    usage: /bw
-  chatcolor:
-    usage: /chatcolor
-  spawn:
-    usage: /spawn [<player>]
+permissions:
+  wafelzwaard.bw:
+    description: Allows bedwars command
+    default: true
+  wafelzwaard.cc:
+    description: Allows chatcolor gui
+    default: true
+  wafelzwaard.spawn:
+    description: Allows using spawn command
+    default: true
+  wafelzwaard.spawn.others:
+    description: Allows teleporting other players to spawn
+    default: op
 
 dependencies:
   server:

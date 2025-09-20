@@ -26,26 +26,40 @@ public class DatabaseManager {
     }
 
     private void setupDatabase() {
-        HikariConfig config = new HikariConfig();
+        try {
+            HikariConfig config = new HikariConfig();
 
-        String host = plugin.getConfig().getString("database.host", "192.168.1.242");
-        int port = plugin.getConfig().getInt("database.port", 3306);
-        String database = plugin.getConfig().getString("database.name", "wafelz");
-        String username = plugin.getConfig().getString("database.username", "luckperms");
-        String password = plugin.getConfig().getString("database.password", "");
+            String host = plugin.getConfig().getString("database.host", "192.168.1.242");
+            int port = plugin.getConfig().getInt("database.port", 3306);
+            String database = plugin.getConfig().getString("database.name", "wafelz");
+            String username = plugin.getConfig().getString("database.username", "luckperms");
+            String password = plugin.getConfig().getString("database.password", "");
 
-        config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
-        config.setUsername(username);
-        config.setPassword(password);
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            // Log the configuration (without password for security)
+            plugin.getLogger().info("Connecting to database:");
+            plugin.getLogger().info("Host: " + host);
+            plugin.getLogger().info("Port: " + port);
+            plugin.getLogger().info("Database: " + database);
+            plugin.getLogger().info("Username: " + username);
+            plugin.getLogger().info("Password: " + (password.isEmpty() ? "NO" : "YES"));
 
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(5);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
-        config.setMaxLifetime(1800000);
+            config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&allowPublicKeyRetrieval=true");
+            config.setUsername(username);
+            config.setPassword(password);
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        dataSource = new HikariDataSource(config);
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(5);
+            config.setConnectionTimeout(30000);
+            config.setIdleTimeout(600000);
+            config.setMaxLifetime(1800000);
+
+            dataSource = new HikariDataSource(config);
+
+        } catch (Exception e) {
+            plugin.getLogger().severe("Failed to setup database connection: " + e.getMessage());
+            throw e;
+        }
     }
 
     private void createTables() {
