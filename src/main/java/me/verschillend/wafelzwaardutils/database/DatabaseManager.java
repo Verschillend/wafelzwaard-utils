@@ -94,7 +94,7 @@ public class DatabaseManager {
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, uuid.toString());
                 stmt.setString(2, playerName);
-                stmt.setInt(3, color);
+                stmt.setString(3, String.valueOf(color));
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to save player data: " + e.getMessage());
@@ -102,7 +102,7 @@ public class DatabaseManager {
         });
     }
 
-    public CompletableFuture<Integer> getPlayerColor(UUID uuid) {
+    public CompletableFuture<Character> getPlayerColor(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             String sql = "SELECT color FROM player_data WHERE uuid = ?";
 
@@ -111,13 +111,14 @@ public class DatabaseManager {
                 stmt.setString(1, uuid.toString());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        return rs.getInt("color");
+                        String colorStr = rs.getString("color");
+                        return (colorStr != null && !colorStr.isEmpty()) ? colorStr.charAt(0) : '7';
                     }
                 }
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to get player color: " + e.getMessage());
             }
-            return 0;
+            return '7'; // Default color
         });
     }
 

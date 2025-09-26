@@ -7,6 +7,7 @@ database:
 
 server:
   lobby: false
+  oneblock: false
 
 gui:
   title: "Chat Colors"
@@ -15,3 +16,52 @@ gui:
 gui2:
   title: "Mode Selector"
   size: 27
+
+suffixes:
+  vip:
+    suffix: " §6[VIP]"
+    display-name: "§6VIP Suffix"
+    permission: "suffix.vip"
+    material: "GOLD_INGOT"
+
+  mvp:
+    suffix: " §b[MVP]"
+    display-name: "§bMVP Suffix"
+    permission: "suffix.mvp"
+    material: "DIAMOND"
+
+  legend:
+    suffix: " §5[LEGEND]"
+    display-name: "§5Legend Suffix"
+    permission: "suffix.legend"
+    material: "NETHERITE_INGOT"
+
+  heart:
+    suffix: " §c❤"
+    display-name: "§cHeart Suffix"
+    permission: "suffix.heart"
+    material: "RED_DYE"
+
+  star:
+    suffix: " §e⭐"
+    display-name: "§eStar Suffix"
+    permission: "suffix.star"
+    material: "NETHER_STAR"
+
+  crown:
+    suffix: " §6♔"
+    display-name: "§6Crown Suffix"
+    permission: "suffix.crown"
+    material: "GOLDEN_HELMET"
+
+  fire:
+    suffix: " §c🔥"
+    display-name: "§cFire Suffix"
+    permission: "suffix.fire"
+    material: "BLAZE_POWDER"
+
+  rainbow:
+    suffix: " §c§l[§6§lR§e§lA§a§lI§b§lN§9§lB§d§lO§5§lW§c§l]"
+    display-name: "§c§lR§6§la§e§li§a§ln§b§lb§9§lo§d§lw"
+    permission: "suffix.rainbow"
+    material: "PRISMARINE_SHARD"

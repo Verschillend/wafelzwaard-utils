@@ -18,6 +18,9 @@ permissions:
   wafelzwaard.spawn.others:
     description: Allows teleporting other players to spawn
     default: op
+  wafelzwaardutils.suffix:
+    description: Allows using the suffix command and GUI
+    default: true
 
 dependencies:
   server:

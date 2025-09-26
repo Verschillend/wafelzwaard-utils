@@ -3,9 +3,11 @@ package me.verschillend.wafelzwaardutils;
 import me.verschillend.wafelzwaardutils.commands.BwCommand;
 import me.verschillend.wafelzwaardutils.commands.ChatColorCommand;
 import me.verschillend.wafelzwaardutils.commands.SpawnCommand;
+import me.verschillend.wafelzwaardutils.commands.SuffixCommand;
 import me.verschillend.wafelzwaardutils.database.DatabaseManager;
 import me.verschillend.wafelzwaardutils.gui.BwGUI;
 import me.verschillend.wafelzwaardutils.gui.CCGUI;
+import me.verschillend.wafelzwaardutils.gui.SuffixGUI;
 import me.verschillend.wafelzwaardutils.placeholders.MyPlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,6 +24,7 @@ public class Wafelzwaardutils extends JavaPlugin {
     private DatabaseManager databaseManager;
     private BwGUI BwGUI;
     private CCGUI CCGUI;
+    private SuffixGUI suffixGUI;
     private final Boolean join = this.getConfig().getBoolean("server.lobby", false);
 
     @Override
@@ -36,6 +39,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         // Initialize GUI
         BwGUI = new BwGUI(this);
         CCGUI = new CCGUI(this);
+        suffixGUI = new SuffixGUI(this);
 
         // Register commands
         registerCommands();
@@ -65,6 +69,9 @@ public class Wafelzwaardutils extends JavaPlugin {
     }
     public BwGUI getBwGUI() {
         return BwGUI;
+    }
+    public SuffixGUI getSuffixGUI() {
+        return suffixGUI;
     }
 
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -107,6 +114,14 @@ public class Wafelzwaardutils extends JavaPlugin {
         spawnCommand.setPermission("wafelzwaard.spawn");
         spawnCommand.setUsage("/spawn [<player>]");
         getServer().getCommandMap().register("wafelzwaardutils", spawnCommand);
+
+        //suffix gui
+        PluginCommand suffixCommand = createCommand("suffix");
+        suffixCommand.setExecutor(new SuffixCommand(suffixGUI));
+        suffixCommand.setDescription("Open the suffix GUI");
+        suffixCommand.setPermission("wafelzwaardutils.suffix");
+        suffixCommand.setUsage("/suffix");
+        getServer().getCommandMap().register("wafelzwaardutils", suffixCommand);
 
         getLogger().info("Commands registered successfully!");
     }
