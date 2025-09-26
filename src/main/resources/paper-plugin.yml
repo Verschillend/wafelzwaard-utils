@@ -21,6 +21,9 @@ permissions:
   wafelzwaardutils.suffix:
     description: Allows using the suffix command and GUI
     default: true
+  wafelzwaardutils.reload:
+    description: Allows reloading the plugin configuration
+    default: op
 
 dependencies:
   server:

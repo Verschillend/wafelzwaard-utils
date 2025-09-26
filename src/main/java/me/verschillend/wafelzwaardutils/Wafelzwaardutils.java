@@ -1,9 +1,6 @@
 package me.verschillend.wafelzwaardutils;
 
-import me.verschillend.wafelzwaardutils.commands.BwCommand;
-import me.verschillend.wafelzwaardutils.commands.ChatColorCommand;
-import me.verschillend.wafelzwaardutils.commands.SpawnCommand;
-import me.verschillend.wafelzwaardutils.commands.SuffixCommand;
+import me.verschillend.wafelzwaardutils.commands.*;
 import me.verschillend.wafelzwaardutils.database.DatabaseManager;
 import me.verschillend.wafelzwaardutils.gui.BwGUI;
 import me.verschillend.wafelzwaardutils.gui.CCGUI;
@@ -17,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 
 
 public class Wafelzwaardutils extends JavaPlugin {
@@ -105,6 +103,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         chatcolorCommand.setExecutor(new ChatColorCommand(CCGUI));
         chatcolorCommand.setDescription("Open the chat color GUI");
         chatcolorCommand.setPermission("wafelzwaard.cc");
+        chatcolorCommand.setAliases(Arrays.asList("chatcolors", "cc"));
         getServer().getCommandMap().register("wafelzwaardutils", chatcolorCommand);
 
         // Register Spawn command
@@ -121,7 +120,17 @@ public class Wafelzwaardutils extends JavaPlugin {
         suffixCommand.setDescription("Open the suffix GUI");
         suffixCommand.setPermission("wafelzwaardutils.suffix");
         suffixCommand.setUsage("/suffix");
+        suffixCommand.setAliases(Arrays.asList("suffixes"));
         getServer().getCommandMap().register("wafelzwaardutils", suffixCommand);
+
+        //reload command
+        PluginCommand reloadCommand = createCommand("wafelzwaardreload");
+        reloadCommand.setExecutor(new ReloadCommand(this));
+        reloadCommand.setDescription("Reload the plugin configuration");
+        reloadCommand.setPermission("wafelzwaardutils.reload");
+        reloadCommand.setUsage("/wafelzwaardreload");
+        reloadCommand.setAliases(Arrays.asList("wzreload", "wafelsreload"));
+        getServer().getCommandMap().register("wafelzwaardutils", reloadCommand);
 
         getLogger().info("Commands registered successfully!");
     }
