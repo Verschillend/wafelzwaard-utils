@@ -132,6 +132,22 @@ public class Wafelzwaardutils extends JavaPlugin {
         reloadCommand.setAliases(Arrays.asList("wzreload", "wafelsreload"));
         getServer().getCommandMap().register("wafelzwaardutils", reloadCommand);
 
+        //island invite:
+        PluginCommand inviteCommand = createCommand("invite");
+        inviteCommand.setExecutor(new InviteCommand(this));
+        inviteCommand.setDescription("Invite a player to your oneblock island");
+        inviteCommand.setPermission("wafelzwaardutils.oneblock.invite");
+        inviteCommand.setUsage("/invite");
+        getServer().getCommandMap().register("wafelzwaardutils", inviteCommand);
+
+        //island kick:
+        PluginCommand kickCommand = createCommand("ikick");
+        kickCommand.setExecutor(new KickCommand(this));
+        kickCommand.setDescription("Kick a player from your oneblock island");
+        kickCommand.setPermission("wafelzwaardutils.oneblock.kick");
+        kickCommand.setUsage("/ikick");
+        getServer().getCommandMap().register("wafelzwaardutils", kickCommand);
+
         getLogger().info("Commands registered successfully!");
     }
 

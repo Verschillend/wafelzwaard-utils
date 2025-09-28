@@ -90,10 +90,10 @@ public class SuffixGUI implements Listener {
         }
 
         // Add remove suffix item
-        gui.setItem(49, createItem(Material.BARRIER, "§cRemove Suffix", "§7Click to remove your current suffix"));
+        gui.setItem(48, createItem(Material.BARRIER, "§cRemove Suffix", "§7Click to remove your current suffix"));
 
         // Add close item
-        gui.setItem(50, createItem(Material.RED_STAINED_GLASS_PANE, "§cClose", "§7Click to close this menu"));
+        gui.setItem(49, createItem(Material.RED_STAINED_GLASS_PANE, "§cClose", "§7Click to close this menu"));
 
         player.openInventory(gui);
     }
@@ -154,13 +154,13 @@ public class SuffixGUI implements Listener {
         }
 
         // Handle close
-        if (slot == 50 && itemName.equals("§cClose")) {
+        if (slot == 49 && itemName.equals("§cClose")) {
             player.closeInventory();
             return;
         }
 
         // Handle remove suffix
-        if (slot == 49 && itemName.equals("§cRemove Suffix")) {
+        if (slot == 48 && itemName.equals("§cRemove Suffix")) {
             player.closeInventory();
             removeSuffix(player);
             return;

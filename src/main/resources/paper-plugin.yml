@@ -24,6 +24,12 @@ permissions:
   wafelzwaardutils.reload:
     description: Allows reloading the plugin configuration
     default: op
+  wafelzwaardutils.oneblock.kick:
+    description: Allows kicking players from your island
+    default: true
+  wafelzwaardutils.oneblock.invite:
+    description: Allows inviting people to your island
+    default: true
 
 dependencies:
   server:
