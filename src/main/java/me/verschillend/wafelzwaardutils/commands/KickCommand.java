@@ -25,9 +25,15 @@ public class KickCommand implements CommandExecutor {
             sender.sendMessage("§cOnly players can run this command!");
             return true;
         }
-        if (args.length > 0) {
-            Bukkit.dispatchCommand(sender, "ob invite " + args[0]);
-            return true;
+        boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
+        if (oneblock) {
+            if (args.length > 0) {
+                Bukkit.dispatchCommand(sender, "ob invite " + args[0]);
+                return true;
+            }
+        }
+        else {
+            sender.sendMessage("§cThis command is not set up on this server! Please contact a administrator if you believe this is a error!");
         }
 
         return true;
