@@ -10,11 +10,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+
+import com.jellypudding.simpleVote.events.VoteEvent;
 
 
 public class Wafelzwaardutils extends JavaPlugin {
@@ -148,6 +151,15 @@ public class Wafelzwaardutils extends JavaPlugin {
         kickCommand.setUsage("/ikick");
         getServer().getCommandMap().register("wafelzwaardutils", kickCommand);
 
+        //discord:
+        PluginCommand discCommand = createCommand("discord");
+        discCommand.setExecutor(new DiscordCommand(this));
+        discCommand.setDescription("Join the discord");
+        discCommand.setPermission("wafelzwaardutils.discord");
+        discCommand.setUsage("/discord");
+        discCommand.setAliases(Arrays.asList("dc"));
+        getServer().getCommandMap().register("wafelzwaardutils", discCommand);
+
         getLogger().info("Commands registered successfully!");
     }
 
@@ -158,6 +170,23 @@ public class Wafelzwaardutils extends JavaPlugin {
             return c.newInstance(name, this);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create command: " + name, e);
+        }
+    }
+
+    @EventHandler
+    public void onVote(VoteEvent event) {
+        boolean oneblock = this.getConfig().getBoolean("server.oneblock", false);
+        if (oneblock) {
+            String playerName = event.getPlayerName();
+
+            Bukkit.dispatchCommand(
+                    Bukkit.getConsoleSender(),
+                    "crate giveKey vote " + playerName + " 1"
+            );
+
+            getLogger().info("Vote from " + playerName + " on " + event.getServiceName());
+
+            Bukkit.broadcastMessage("§aPlayer: §c" + playerName + "§2voted for the server!");
         }
     }
 }

@@ -1,18 +1,26 @@
 package me.verschillend.wafelzwaardutils.commands;
 
 import me.verschillend.wafelzwaardutils.Wafelzwaardutils;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.List;
+import java.util.Random;
 
 public class ReloadCommand implements CommandExecutor {
 
     private final Wafelzwaardutils plugin;
+    private BukkitTask broadcastTask;
+    private final Random random = new Random();
 
     public ReloadCommand(Wafelzwaardutils plugin) {
         this.plugin = plugin;
+        startBroadcastLoop();
     }
 
     @Override
@@ -36,6 +44,8 @@ public class ReloadCommand implements CommandExecutor {
             // Reload the config
             plugin.reloadConfig();
 
+            restartBroadcastLoop();
+
             // Clear any cached data if needed
             // For example, if you have cached suffix data, clear it here
 
@@ -51,5 +61,25 @@ public class ReloadCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private void startBroadcastLoop() {
+        broadcastTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            List<String> broadcasts = plugin.getConfig().getStringList("broadcasts");
+
+            if (broadcasts == null || broadcasts.isEmpty()) {
+                return; // no broadcasts defined
+            }
+
+            String message = broadcasts.get(random.nextInt(broadcasts.size()));
+            Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
+        }, 0L, 9000L); // every 7.5 seconds (20 ticks = 1 second)
+    }
+
+    private void restartBroadcastLoop() {
+        if (broadcastTask != null && !broadcastTask.isCancelled()) {
+            broadcastTask.cancel();
+        }
+        startBroadcastLoop();
     }
 }

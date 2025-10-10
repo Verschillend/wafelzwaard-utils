@@ -30,9 +30,15 @@ permissions:
   wafelzwaardutils.oneblock.invite:
     description: Allows inviting people to your island
     default: true
+  wafelzwaardutils.discord:
+    description: Allows /discord command
+    default: true
 
 dependencies:
   server:
     PlaceholderAPI:
+      load: BEFORE
+      required: false
+    SimpleVote:
       load: BEFORE
       required: false

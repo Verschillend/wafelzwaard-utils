@@ -8,6 +8,14 @@ database:
 server:
   lobby: false
   oneblock: false
+  fbf: false
+  discord-link: https://discord.gg/tnbZZEQjAP
+
+broadcasts:
+  - "<blue>Join our Discord: <click:open_url:'https://discord.gg/tnbZZEQjAP'><underline>Click Here</underline></click>"
+  - "<click:run_command:'/vote'><gold>Remember to vote daily for rewards! /vote</gold></click>"
+  - "<green>Need help? Ask staff anytime!</green>"
+  - "<click:run_command:'/buy'><aqua>Please consider donating to help support the server!</aqua></click>"
 
 gui:
   title: "Chat Colors"
@@ -18,18 +26,6 @@ gui2:
   size: 27
 
 suffixes:
-  vip:
-    suffix: " §6[VIP]"
-    display-name: "§6VIP Suffix"
-    permission: "suffix.vip"
-    material: "GOLD_INGOT"
-
-  mvp:
-    suffix: " §b[MVP]"
-    display-name: "§bMVP Suffix"
-    permission: "suffix.mvp"
-    material: "DIAMOND"
-
   legend:
     suffix: " §5[LEGEND]"
     display-name: "§5Legend Suffix"
@@ -48,20 +44,83 @@ suffixes:
     permission: "suffix.star"
     material: "NETHER_STAR"
 
-  crown:
-    suffix: " §6♔"
-    display-name: "§6Crown Suffix"
-    permission: "suffix.crown"
-    material: "GOLDEN_HELMET"
-
   fire:
-    suffix: " §c🔥"
-    display-name: "§cFire Suffix"
+    suffix: " §e🔥"
+    display-name: "§eFire Suffix"
     permission: "suffix.fire"
     material: "BLAZE_POWDER"
-
-  rainbow:
-    suffix: " §c§l[§6§lR§e§lA§a§lI§b§lN§9§lB§d§lO§5§lW§c§l]"
-    display-name: "§c§lR§6§la§e§li§a§ln§b§lb§9§lo§d§lw"
-    permission: "suffix.rainbow"
-    material: "PRISMARINE_SHARD"
+  ee:
+    suffix: " §7🔥"
+    display-name: "§aEaster egg suffix"
+    permission: "suffix.ee"
+    material: "SNIFFER_EGG"
+  money:
+    suffix: " §6$"
+    display-name: "§6Donator suffix. Purchase something on the server store to unlock!"
+    permission: "suffix.donator"
+    material: "GOLD_INGOT"
+  diasword:
+    suffix: " §b🗡"
+    display-name: "§aDiamond sword suffix"
+    permission: "suffix.diasword"
+    material: "DIAMOND_SWORD"
+  goldsword:
+    suffix: " §6🗡"
+    display-name: "§aGold sword suffix"
+    permission: "suffix.goldsword"
+    material: "GOLDEN_SWORD"
+  ironsword:
+    suffix: " §7🗡"
+    display-name: "§aIron sword suffix"
+    permission: "suffix.ironsword"
+    material: "IRON_SWORD"
+  stonesword:
+    suffix: " §8🗡"
+    display-name: "§aStone sword suffix"
+    permission: "suffix.stonesword"
+    material: "STONE_SWORD"
+  bow:
+    suffix: " §6🏹"
+    display-name: "§aBow suffix"
+    permission: "suffix.bow"
+    material: "BOW"
+  diaaxe:
+    suffix: " §b🪓"
+    display-name: "§aDiamond axe suffix"
+    permission: "suffix.diaaxe"
+    material: "DIAMOND_AXE"
+  trident:
+    suffix: " §b🔱"
+    display-name: "§aTrident suffix"
+    permission: "suffix.trident"
+    material: "TRIDENT"
+  ironaxe:
+    suffix: " §7🪓"
+    display-name: "§aIron sword suffix"
+    permission: "suffix.ironaxe"
+    material: "IRON_AXE"
+  goldaxe:
+    suffix: " §6🪓"
+    display-name: "§aGolden axe suffix"
+    permission: "suffix.goldaxe"
+    material: "GOLDEN_AXE"
+  stoneaxe:
+    suffix: " §8🪓"
+    display-name: "§aStone axe suffix"
+    permission: "suffix.stoneaxe"
+    material: "STONE_AXE"
+  fishingrod:
+    suffix: " §3🎣"
+    display-name: "§aFishing rod suffix"
+    permission: "suffix.fishing_rod"
+    material: "FISHING_ROD"
+  potion:
+    suffix: " §9🧪"
+    display-name: "§aPotion suffix"
+    permission: "suffix.potion"
+    material: "POTION"
+  splshpotion:
+    suffix: " §9⚗"
+    display-name: "§aSplash potion suffix"
+    permission: "suffix.splshpotion"
+    material: "SPLASH_POTION"
