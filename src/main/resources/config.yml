@@ -17,13 +17,33 @@ broadcasts:
   - "<green>Need help? Ask staff anytime!</green>"
   - "<click:run_command:'/buy'><aqua>Please consider donating to help support the server!</aqua></click>"
 
-gui:
-  title: "Chat Colors"
-  size: 36
+#referral System Configuration
+referral:
+  #Gems given to the person who USED the referral code (new player being referred)
+  #referred-player-gems: 25.0
 
-gui2:
-  title: "Mode Selector"
-  size: 27
+  #Gems given to the person whose code was used (referrer)
+  #referrer-gems: 25.0
+
+  #Commands for the referred player
+  referred-player-commands:
+    - "gems add %player% 25"
+    # - "broadcast &a%player% was referred to the server!"
+
+  #Commands for the referrer
+  referrer-commands:
+    - "gems add %player% 25"
+    # - "tell %player% &aYou earned gems for referring someone!"
+
+# Referral Milestones (number = required referrals)
+referral-milestones:
+  5:
+    command: "gems add %player% 100"
+    description: "100 Bonus Gems"
+  10:
+    command: "gems add %player% 250"
+    description: "250 Bonus Gems"
+
 
 suffixes:
   legend:

@@ -321,6 +321,9 @@ public class CCGUI implements Listener {
     }
 
     private void setChatColor(Player player, char colorCode) {
-        plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), colorCode);
+        plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).thenAccept(gems -> {
+            plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), colorCode, gems);
+        });
+        //plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), colorCode, gems2);
     }
 }

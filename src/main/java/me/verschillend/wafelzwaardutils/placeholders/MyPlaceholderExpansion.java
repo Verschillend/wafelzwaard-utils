@@ -33,6 +33,7 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
         return true; //This is required or else PlaceholderAPI will unregister the Expansion on reload
     }
 
+
     @Override
     public String onPlaceholderRequest(Player player, String params) {
         if (player == null) {
@@ -47,6 +48,26 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
                 return "7";
             }
         }
+
+        // %wafelzwaard_gems%
+        if (params.equals("gems")) {
+            try {
+                return String.format("%.2f", plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).get());
+            } catch (Exception e) {
+                return "0.00";
+            }
+        }
+
+        // %wafelzwaard_gems_formatted%
+        if (params.equals("gems_formatted")) {
+            try {
+                double gems = plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).get();
+                return formatNumber(gems);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+
         if (params.equals("bw")) {
             try {
                 String bedwars = PlaceholderAPI.setPlaceholders(player, "%bungee_bedwars-1%");
@@ -72,5 +93,14 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private String formatNumber(double number) {
+        if (number >= 1000000) {
+            return String.format("%.1fM", number / 1000000.0);
+        } else if (number >= 1000) {
+            return String.format("%.1fK", number / 1000.0);
+        }
+        return String.format("%.2f", number);
     }
 }

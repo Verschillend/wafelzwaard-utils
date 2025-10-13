@@ -1,23 +1,28 @@
 package me.verschillend.wafelzwaardutils;
 
+import com.jellypudding.simpleVote.SimpleVote;
 import me.verschillend.wafelzwaardutils.commands.*;
 import me.verschillend.wafelzwaardutils.database.DatabaseManager;
 import me.verschillend.wafelzwaardutils.gui.BwGUI;
 import me.verschillend.wafelzwaardutils.gui.CCGUI;
+import me.verschillend.wafelzwaardutils.gui.ReferralGUI;
 import me.verschillend.wafelzwaardutils.gui.SuffixGUI;
 import me.verschillend.wafelzwaardutils.placeholders.MyPlaceholderExpansion;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.List;
 
-import com.jellypudding.simpleVote.events.VoteEvent;
+import com.jellypudding.simpleVote.TokenManager;
 
 
 public class Wafelzwaardutils extends JavaPlugin {
@@ -27,6 +32,11 @@ public class Wafelzwaardutils extends JavaPlugin {
     private CCGUI CCGUI;
     private SuffixGUI suffixGUI;
     private final Boolean join = this.getConfig().getBoolean("server.lobby", false);
+    private ReferralGUI referralGUI;
+
+    public ReferralGUI getReferralGUI() {
+        return referralGUI;
+    }
 
     @Override
     public void onEnable() {
@@ -41,6 +51,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         BwGUI = new BwGUI(this);
         CCGUI = new CCGUI(this);
         suffixGUI = new SuffixGUI(this);
+        referralGUI = new ReferralGUI(this);
 
         // Register commands
         registerCommands();
@@ -48,6 +59,31 @@ public class Wafelzwaardutils extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new MyPlaceholderExpansion(this).register();
             getLogger().info("PlaceholderAPI integration enabled!");
+        }
+        if (Bukkit.getPluginManager().getPlugin("SimpleVote") != null) {
+            getLogger().info("SimpleVote integration enabled!");
+        }
+        boolean oneblock = this.getConfig().getBoolean("server.oneblock", false);
+        if (oneblock) {
+            SimpleVote sv = (SimpleVote) Bukkit.getPluginManager().getPlugin("SimpleVote");
+            Bukkit.getScheduler().runTaskTimer(this, () -> {
+                TokenManager tm = sv.getTokenManager();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    int tokens = tm.getTokens(p.getUniqueId());
+                    if (tokens >= 1) {
+                        tm.removeTokens(p.getUniqueId(), tokens);
+                        for (int i = 0; i < tokens; i++) {
+                            Bukkit.broadcastMessage("§aPlayer: §e" + p.getName() + " §avoted for the server!");
+                        }
+                        String tokens2 = String.valueOf((int) tokens);
+                        Bukkit.dispatchCommand(
+                                Bukkit.getConsoleSender(),
+                                "crate giveKey vote " + p.getName() + " " + tokens2
+                        );
+                        p.sendMessage("§aYour " + tokens + " §avote tokens were automatically converted to vote crate keys!");
+                    }
+                }
+            }, 0L, 150L);
         }
 
         getLogger().info("WafelzwaardUtils has been enabled!");
@@ -83,12 +119,23 @@ public class Wafelzwaardutils extends JavaPlugin {
             event.getPlayer().teleport(loc);
         }
         this.getDatabaseManager().getPlayerColor(event.getPlayer().getUniqueId()).thenAccept(color -> {
-            if (color == 0) {
+            if (color == 0) { //New player
                 this.getDatabaseManager().savePlayerData(
                         event.getPlayer().getUniqueId(),
                         event.getPlayer().getName(),
-                        '7'
+                        '7',
+                        0.0 //default gems amount
                 );
+
+                //Generate referral code for new player
+                this.getDatabaseManager().generateReferralCode(event.getPlayer().getUniqueId());
+            } else {
+                // heck if existing player needs a referral code
+                this.getDatabaseManager().getPlayerReferralCode(event.getPlayer().getUniqueId()).thenAccept(code -> {
+                    if (code == null) {
+                        this.getDatabaseManager().generateReferralCode(event.getPlayer().getUniqueId());
+                    }
+                });
             }
         });
     }
@@ -160,6 +207,32 @@ public class Wafelzwaardutils extends JavaPlugin {
         discCommand.setAliases(Arrays.asList("dc"));
         getServer().getCommandMap().register("wafelzwaardutils", discCommand);
 
+        //gems command
+        PluginCommand gemsCommand = createCommand("gems");
+        gemsCommand.setExecutor(new GemsCommand(this));
+        gemsCommand.setDescription("Manage gems");
+        gemsCommand.setPermission("wafelzwaardutils.gems");
+        gemsCommand.setUsage("/gems [set|add|remove|check] [player] [amount]");
+        gemsCommand.setAliases(Arrays.asList("gem"));
+        getServer().getCommandMap().register("wafelzwaardutils", gemsCommand);
+
+        //Referral GUI command
+        PluginCommand referralCommand = createCommand("referral");
+        referralCommand.setExecutor(new ReferralCommand(this, referralGUI));
+        referralCommand.setDescription("Open referral GUI");
+        referralCommand.setPermission("wafelzwaardutils.referral");
+        referralCommand.setUsage("/referral");
+        referralCommand.setAliases(Arrays.asList("referrals", "ref"));
+        getServer().getCommandMap().register("wafelzwaardutils", referralCommand);
+
+        //Refer command
+        PluginCommand referCommand = createCommand("refer");
+        referCommand.setExecutor(new ReferCommand(this));
+        referCommand.setDescription("Use a referral code");
+        referCommand.setPermission("wafelzwaardutils.refer");
+        referCommand.setUsage("/refer <code>");
+        getServer().getCommandMap().register("wafelzwaardutils", referCommand);
+
         getLogger().info("Commands registered successfully!");
     }
 
@@ -170,23 +243,6 @@ public class Wafelzwaardutils extends JavaPlugin {
             return c.newInstance(name, this);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create command: " + name, e);
-        }
-    }
-
-    @EventHandler
-    public void onVote(VoteEvent event) {
-        boolean oneblock = this.getConfig().getBoolean("server.oneblock", false);
-        if (oneblock) {
-            String playerName = event.getPlayerName();
-
-            Bukkit.dispatchCommand(
-                    Bukkit.getConsoleSender(),
-                    "crate giveKey vote " + playerName + " 1"
-            );
-
-            getLogger().info("Vote from " + playerName + " on " + event.getServiceName());
-
-            Bukkit.broadcastMessage("§aPlayer: §c" + playerName + "§2voted for the server!");
         }
     }
 }

@@ -33,6 +33,18 @@ permissions:
   wafelzwaardutils.discord:
     description: Allows /discord command
     default: true
+  wafelzwaardutils.gems:
+    description: Allows checking own gems
+    default: true
+  wafelzwaardutils.gems.admin:
+    description: Allows managing other players' gems
+    default: op
+  wafelzwaardutils.referral:
+    description: Access to referral GUI
+    default: true
+  wafelzwaardutils.refer:
+    description: Use referral codes
+    default: true
 
 dependencies:
   server:
