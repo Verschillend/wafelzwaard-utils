@@ -44,7 +44,6 @@ referral-milestones:
     command: "gems add %player% 250"
     description: "250 Bonus Gems"
 
-
 suffixes:
   legend:
     suffix: " §5[LEGEND]"

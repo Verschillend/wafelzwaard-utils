@@ -23,6 +23,7 @@ public class DatabaseManager {
     public void initialize() {
         setupDatabase();
         createTables();
+        updateTables();
     }
 
     private void setupDatabase() {
@@ -98,6 +99,33 @@ public class DatabaseManager {
             plugin.getLogger().info("Database tables created successfully!");
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to create database tables: " + e.getMessage());
+        }
+    }
+
+    private void updateTables() {
+        // Add missing columns if they don't exist
+        String[] alterStatements = {
+                "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS gems DOUBLE DEFAULT 0.0",
+                "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS referral_code VARCHAR(8) UNIQUE",
+                "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS referred_by VARCHAR(36)",
+                "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS referral_count INT DEFAULT 0"
+        };
+
+        try (Connection conn = dataSource.getConnection()) {
+            for (String sql : alterStatements) {
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.executeUpdate();
+                    plugin.getLogger().info("Updated table structure: " + sql);
+                } catch (SQLException e) {
+                    // Column might already exist, this is usually fine
+                    if (!e.getMessage().contains("Duplicate column")) {
+                        plugin.getLogger().warning("Failed to update table: " + e.getMessage());
+                    }
+                }
+            }
+            plugin.getLogger().info("Table structure update completed!");
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to update tables: " + e.getMessage());
         }
     }
 

@@ -2,10 +2,13 @@ package me.verschillend.wafelzwaardutils.commands;
 
 import me.verschillend.wafelzwaardutils.Wafelzwaardutils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class GemsCommand implements CommandExecutor {
 
@@ -23,7 +26,7 @@ public class GemsCommand implements CommandExecutor {
                 return true;
             }
 
-            // Show own gems
+            //show own gems
             plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).thenAccept(gems -> {
                 player.sendMessage("§eYou have §6" + String.format("%.2f", gems) + " §egems!");
             });
@@ -44,17 +47,24 @@ public class GemsCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = Bukkit.getPlayer(args[1]);
-                if (target == null) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
                     sender.sendMessage("§cPlayer not found!");
                     return true;
                 }
+                UUID uuid = target.getUniqueId();
+                String name = target.getName() != null ? target.getName() : args[1];
 
                 try {
                     double amount = Double.parseDouble(args[2]);
-                    plugin.getDatabaseManager().setPlayerGems(target.getUniqueId(), target.getName(), amount).thenRun(() -> {
-                        sender.sendMessage("§aSet " + target.getName() + "'s gems to " + String.format("%.2f", amount));
-                        target.sendMessage("§aYour gems have been set to §6" + String.format("%.2f", amount) + "§a!");
+                    plugin.getDatabaseManager().setPlayerGems(uuid, name, amount).thenRun(() -> {
+                        sender.sendMessage("§aSet " + name + "'s gems to " + String.format("%.2f", amount));
+                        if (target.isOnline()) {
+                            Player online = target.getPlayer();
+                            if (online != null) {
+                                online.sendMessage("§aYour gems have been set to §6" + String.format("%.2f", amount) + "§a!");
+                            }
+                        }
                     });
                 } catch (NumberFormatException e) {
                     sender.sendMessage("§cInvalid number format!");
@@ -72,11 +82,13 @@ public class GemsCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = Bukkit.getPlayer(args[1]);
-                if (target == null) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
                     sender.sendMessage("§cPlayer not found!");
                     return true;
                 }
+                UUID uuid = target.getUniqueId();
+                String name = target.getName() != null ? target.getName() : args[1];
 
                 try {
                     double amount = Double.parseDouble(args[2]);
@@ -85,9 +97,14 @@ public class GemsCommand implements CommandExecutor {
                         return true;
                     }
 
-                    plugin.getDatabaseManager().addPlayerGems(target.getUniqueId(), target.getName(), amount).thenAccept(newAmount -> {
-                        sender.sendMessage("§aAdded " + String.format("%.2f", amount) + " gems to " + target.getName() + " (Total: " + String.format("%.2f", newAmount) + ")");
-                        target.sendMessage("§aYou received §6" + String.format("%.2f", amount) + " §agems! Total: §6" + String.format("%.2f", newAmount));
+                    plugin.getDatabaseManager().addPlayerGems(uuid, name, amount).thenAccept(newAmount -> {
+                        sender.sendMessage("§aAdded " + String.format("%.2f", amount) + " gems to " + name + " (Total: " + String.format("%.2f", newAmount) + ")");
+                        if (target.isOnline()) {
+                            Player online = target.getPlayer();
+                            if (online != null) {
+                                online.sendMessage("§aYou received §6" + String.format("%.2f", amount) + " §agems! Total: §6" + String.format("%.2f", newAmount));
+                            }
+                        }
                     });
                 } catch (NumberFormatException e) {
                     sender.sendMessage("§cInvalid number format!");
@@ -105,11 +122,13 @@ public class GemsCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = Bukkit.getPlayer(args[1]);
-                if (target == null) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
                     sender.sendMessage("§cPlayer not found!");
                     return true;
                 }
+                UUID uuid = target.getUniqueId();
+                String name = target.getName() != null ? target.getName() : args[1];
 
                 try {
                     double amount = Double.parseDouble(args[2]);
@@ -118,9 +137,14 @@ public class GemsCommand implements CommandExecutor {
                         return true;
                     }
 
-                    plugin.getDatabaseManager().removePlayerGems(target.getUniqueId(), target.getName(), amount).thenAccept(newAmount -> {
-                        sender.sendMessage("§aRemoved " + String.format("%.2f", amount) + " gems from " + target.getName() + " (Total: " + String.format("%.2f", newAmount) + ")");
-                        target.sendMessage("§c" + String.format("%.2f", amount) + " §cgems were removed from your account! Total: §6" + String.format("%.2f", newAmount));
+                    plugin.getDatabaseManager().removePlayerGems(uuid, name, amount).thenAccept(newAmount -> {
+                        sender.sendMessage("§aRemoved " + String.format("%.2f", amount) + " gems from " + name + " (Total: " + String.format("%.2f", newAmount) + ")");
+                        if (target.isOnline()) {
+                            Player online = target.getPlayer();
+                            if (online != null) {
+                                online.sendMessage("§c" + String.format("%.2f", amount) + " §cgems were removed from your account! Total: §6" + String.format("%.2f", newAmount));
+                            }
+                        }
                     });
                 } catch (NumberFormatException e) {
                     sender.sendMessage("§cInvalid number format!");
@@ -138,14 +162,16 @@ public class GemsCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = Bukkit.getPlayer(args[1]);
-                if (target == null) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
                     sender.sendMessage("§cPlayer not found!");
                     return true;
                 }
+                UUID uuid = target.getUniqueId();
+                String name = target.getName() != null ? target.getName() : args[1];
 
-                plugin.getDatabaseManager().getPlayerGems(target.getUniqueId()).thenAccept(gems -> {
-                    sender.sendMessage("§e" + target.getName() + " has §6" + String.format("%.2f", gems) + " §egems");
+                plugin.getDatabaseManager().getPlayerGems(uuid).thenAccept(gems -> {
+                    sender.sendMessage("§e" + name + " has §6" + String.format("%.2f", gems) + " §egems");
                 });
             }
 
