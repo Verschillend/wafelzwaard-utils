@@ -73,7 +73,7 @@ public class ReloadCommand implements CommandExecutor {
 
             String message = broadcasts.get(random.nextInt(broadcasts.size()));
             Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
-        }, 0L, 9000L); // every 7.5 seconds (20 ticks = 1 second)
+        }, 0L, 6000L); // every 5 mins
     }
 
     private void restartBroadcastLoop() {
