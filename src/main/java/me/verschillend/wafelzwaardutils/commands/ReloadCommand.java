@@ -41,8 +41,11 @@ public class ReloadCommand implements CommandExecutor {
                 }
             }
 
-            // Reload the config
+            // Reload main config
             plugin.reloadConfig();
+
+            // Reload gem shop config
+            plugin.getGemShopConfig().reloadConfig();
 
             restartBroadcastLoop();
 
@@ -50,6 +53,7 @@ public class ReloadCommand implements CommandExecutor {
             // For example, if you have cached suffix data, clear it here
 
             sender.sendMessage("§aWafelzwaardUtils config has been reloaded successfully!");
+            sender.sendMessage("§aGem shop config has been reloaded successfully!");
             sender.sendMessage("§7Note: Players with open GUIs had them closed automatically.");
 
             plugin.getLogger().info("Config reloaded by " + sender.getName());

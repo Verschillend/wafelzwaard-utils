@@ -9,6 +9,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class ReferCommand implements CommandExecutor {
 
@@ -44,6 +46,25 @@ public class ReferCommand implements CommandExecutor {
             return true;
         }
 
+        //save data just in case
+        CompletableFuture<Double> future = plugin.getDatabaseManager().getPlayerGems(player.getUniqueId());
+        Double result = null;
+        try {
+            result = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        CompletableFuture<Character> future2 = plugin.getDatabaseManager().getPlayerColor(player.getUniqueId());
+        Character result2 = null;
+        try {
+            result2 = future2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        if (result == 0.0) {
+            plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), result2, 0.0).join();
+        }
+
         // Check if player was already referred
         plugin.getDatabaseManager().wasPlayerReferred(player.getUniqueId()).thenAccept(wasReferred -> {
             if (wasReferred) {
@@ -61,10 +82,10 @@ public class ReferCommand implements CommandExecutor {
                 // Process the referral
                 plugin.getDatabaseManager().processReferral(player.getUniqueId(), referralCode).thenAccept(success -> {
                     if (success) {
-                        player.sendMessage("§a§l🎉 REFERRAL SUCCESS! 🎉");
+                        player.sendMessage("§a§lREFERRAL SUCCESS!");
                         player.sendMessage("§aYou have been successfully referred!");
 
-                        // Reward the REFERRED player (person who used the code)
+                        //reward the REFERRED player (person who used the code)
                         executeReferralCommands("referral.referred-player-commands", player.getName());
 
                         // Get referrer and reward them + notify + check milestones

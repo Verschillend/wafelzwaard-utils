@@ -1,0 +1,119 @@
+#gem Shop Configuration File
+#store URL for purchasing gems
+store-url: "store.wafelzwaard.rf.gd"
+
+#main menu configuration
+main-menu:
+  items:
+    info:
+      slot: 22
+      material: "NETHER_STAR"
+      display-name: "§6§lWelcome to the Gem Shop!"
+      lore:
+        - "§7Browse our sections above to"
+        - "§7purchase items with gems!"
+        - ""
+        - "§eClick a section to browse items"
+      enchanted: true
+      flags:
+        - "HIDE_ENCHANTS"
+      shop-item: false
+
+# Shop sections (displayed in top row)
+sections:
+  ranks:
+    display-name: "§b§lRanks"
+    material: "DIAMOND"
+    lore:
+      - "§7Purchase ranks with gems!"
+      - ""
+      - "§eClick to browse"
+    enchanted: true
+    flags:
+      - "HIDE_ENCHANTS"
+
+    items:
+      vip:
+        slot: 20
+        material: "GOLD_INGOT"
+        display-name: "§6§lVIP Rank"
+        lore:
+          - "§7Upgrade to VIP rank!"
+          - ""
+          - "§a✓ §7Access to /fly"
+          - "§a✓ §7Join full server"
+          - "§a✓ §7Chat colors"
+        enchanted: false
+        flags: []
+        shop-item: true
+        price: 500.0
+        required-permission: "wafelzwaardutils.preferred"
+        commands:
+          - "lp user %player% parent set vip"
+          - "broadcast &6%player% &apurchased VIP rank!"
+
+  #only in lobby
+  crates:
+    display-name: "§d§lLootboxes"
+    material: "TRIPWIRE_HOOK"
+    lore:
+      - "§7Purchase lootboxes!"
+      - ""
+      - "§eClick to browse"
+    enchanted: false
+    flags: []
+
+    items:
+      1x_lootbox:
+        slot: 10
+        material: "TRIPWIRE_HOOK"
+        display-name: "§aLootbox"
+        lore:
+          - "§7Open a lootbox!"
+          - "§7Contains cosmetics (/cosmetics)"
+        enchanted: false
+        flags: []
+        shop-item: true
+        price: 24.7
+        commands:
+          - "crates givekey lootbox %player% 1"
+      3x_lootbox:
+        slot: 11
+        material: "TRIPWIRE_HOOK"
+        display-name: "§a3x Lootbox"
+        lore:
+          - "§7Open a lootbox!"
+          - "§7Contains cosmetics (/cosmetics)"
+        enchanted: false
+        flags: []
+        shop-item: true
+        price: 65
+        commands:
+          - "crates givekey lootbox %player% 3"
+      5x_lootbox:
+        slot: 12
+        material: "TRIPWIRE_HOOK"
+        display-name: "§a5x Lootbox"
+        lore:
+          - "§7Open a lootbox!"
+          - "§7Contains cosmetics (/cosmetics)"
+        enchanted: false
+        flags: []
+        shop-item: true
+        price: 115
+        commands:
+          - "crates givekey lootbox %player% 5"
+      10x_lootbox:
+        slot: 13
+        material: "TRIPWIRE_HOOK"
+        display-name: "§a10x Lootbox"
+        lore:
+          - "§7Open a lootbox!"
+          - "§7Contains cosmetics (/cosmetics)"
+        enchanted: true
+        flags:
+          - "HIDE_ENCHANTS"
+        shop-item: true
+        price: 198
+        commands:
+          - "crates givekey lootbox %player% 10"

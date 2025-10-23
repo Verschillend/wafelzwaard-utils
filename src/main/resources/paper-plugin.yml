@@ -45,6 +45,9 @@ permissions:
   wafelzwaardutils.refer:
     description: Use referral codes
     default: true
+  wafelzwaardutils.gemshop:
+    description: Access to gem shop
+    default: true
 
 dependencies:
   server:

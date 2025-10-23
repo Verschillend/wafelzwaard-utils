@@ -74,14 +74,20 @@ public class ReferralGUI implements Listener {
             }
         });
 
-        // Pagination
-        int itemsPerPage = 8; // Slots 19-26 (8 slots)
+        //pagination - 28 items per page (4 rows of 7)
+        int itemsPerPage = 28;
         int totalPages = (int) Math.ceil((double) milestoneKeys.size() / itemsPerPage);
         int startIndex = page * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, milestoneKeys.size());
 
-        // Milestone slots: 19, 20, 21, 22, 23, 24, 25, 26
-        int[] milestoneSlots = {19, 20, 21, 22, 23, 24, 25, 26};
+        //milestone slots: rows of 7 items each
+        //row 1: 10-16, Row 2: 19-25, Row 3: 28-34, Row 4: 37-43
+        int[] milestoneSlots = {
+                10, 11, 12, 13, 14, 15, 16,  //row 1
+                19, 20, 21, 22, 23, 24, 25,  //row 2
+                28, 29, 30, 31, 32, 33, 34,  //row 3
+                37, 38, 39, 40, 41, 42, 43   //row 4
+        };
         int slotIndex = 0;
 
         for (int i = startIndex; i < endIndex && slotIndex < milestoneSlots.length; i++) {
@@ -91,15 +97,23 @@ public class ReferralGUI implements Listener {
             if (milestoneConfig == null) continue;
 
             int requiredReferrals = Integer.parseInt(milestoneKey);
-            String command = milestoneConfig.getString("command", "").replace("%player%", player.getName());
             String description = milestoneConfig.getString("description", "Milestone reward");
+            boolean isMajor = milestoneConfig.getBoolean("major", false);
 
             boolean completed = referralCount >= requiredReferrals;
-            Material material = completed ? Material.EMERALD : Material.COAL;
+
+            //choose material based on major status and completion
+            Material material;
+            if (isMajor) {
+                material = completed ? Material.EMERALD_BLOCK : Material.COAL_BLOCK;
+            } else {
+                material = completed ? Material.EMERALD : Material.COAL;
+            }
 
             List<String> lore = new ArrayList<>();
             lore.add("§7Required Referrals: §e" + requiredReferrals);
             lore.add("§7Reward: §a" + description);
+
             lore.add("");
 
             if (completed) {
@@ -119,10 +133,9 @@ public class ReferralGUI implements Listener {
                 lore.add(progressBar.toString());
             }
 
-            ItemStack milestoneItem = createItem(material,
-                    "§6" + requiredReferrals + " Referrals Milestone",
-                    lore.toArray(new String[0])
-            );
+            String displayName = isMajor ? "§6§l" + requiredReferrals + " Referrals Milestone" : "§6" + requiredReferrals + " Referrals Milestone";
+
+            ItemStack milestoneItem = createItem(material, displayName, lore.toArray(new String[0]));
 
             if (completed) {
                 milestoneItem.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
@@ -145,7 +158,7 @@ public class ReferralGUI implements Listener {
         }
 
         // Close button
-        gui.setItem(49, createItem(Material.RED_STAINED_GLASS_PANE, "§cClose", "§7Close this menu"));
+        gui.setItem(49, createItem(Material.BARRIER, "§cClose", "§7Close this menu"));
     }
 
     private ItemStack createItem(Material material, String name, String... lore) {
@@ -167,14 +180,14 @@ public class ReferralGUI implements Listener {
 
         int slot = event.getSlot();
 
-        // Navigation
-        if (slot == 45) { // Previous page
+        //navigation
+        if (slot == 45) { //previous page
             int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
             openGUI(player, Math.max(0, currentPage - 1));
-        } else if (slot == 53) { // Next page
+        } else if (slot == 53) { //next page
             int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
             openGUI(player, currentPage + 1);
-        } else if (slot == 49) { // Close
+        } else if (slot == 49) { //close
             player.closeInventory();
         }
     }

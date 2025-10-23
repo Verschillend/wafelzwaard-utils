@@ -2,11 +2,9 @@ package me.verschillend.wafelzwaardutils;
 
 import com.jellypudding.simpleVote.SimpleVote;
 import me.verschillend.wafelzwaardutils.commands.*;
+import me.verschillend.wafelzwaardutils.config.GemShopConfig;
 import me.verschillend.wafelzwaardutils.database.DatabaseManager;
-import me.verschillend.wafelzwaardutils.gui.BwGUI;
-import me.verschillend.wafelzwaardutils.gui.CCGUI;
-import me.verschillend.wafelzwaardutils.gui.ReferralGUI;
-import me.verschillend.wafelzwaardutils.gui.SuffixGUI;
+import me.verschillend.wafelzwaardutils.gui.*;
 import me.verschillend.wafelzwaardutils.placeholders.MyPlaceholderExpansion;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -33,6 +31,8 @@ public class Wafelzwaardutils extends JavaPlugin {
     private SuffixGUI suffixGUI;
     private final Boolean join = this.getConfig().getBoolean("server.lobby", false);
     private ReferralGUI referralGUI;
+    private GemShopConfig gemShopConfig;
+    private GemShopGUI gemShopGUI;
 
     public ReferralGUI getReferralGUI() {
         return referralGUI;
@@ -46,15 +46,23 @@ public class Wafelzwaardutils extends JavaPlugin {
         // Initialize database
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
+        getLogger().info("Database initialized!");
+
+        //initialize gem shop config
+        gemShopConfig = new GemShopConfig(this);
+        getLogger().info("GemShop config initialized!");
 
         // Initialize GUI
         BwGUI = new BwGUI(this);
         CCGUI = new CCGUI(this);
         suffixGUI = new SuffixGUI(this);
         referralGUI = new ReferralGUI(this);
+        gemShopGUI = new GemShopGUI(this, gemShopConfig);
+        getLogger().info("Guis initialized!");
 
         // Register commands
         registerCommands();
+        getLogger().info("Commands registered!");
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new MyPlaceholderExpansion(this).register();
@@ -110,16 +118,18 @@ public class Wafelzwaardutils extends JavaPlugin {
     public SuffixGUI getSuffixGUI() {
         return suffixGUI;
     }
+    public GemShopConfig getGemShopConfig() { return gemShopConfig; }
+    public GemShopGUI getGemShopGUI() { return gemShopGUI; }
 
     public void onPlayerJoin(PlayerJoinEvent event) {
-        //Boolean join = this.getConfig().getBoolean("server.lobby", false);
+        Boolean join = this.getConfig().getBoolean("server.lobby", false);
         if (join) {
             World world = Bukkit.getWorld("world");
             Location loc = new Location(world, -212.5, 74.0, 147.5, 180, 0);
             event.getPlayer().teleport(loc);
         }
         this.getDatabaseManager().getPlayerColor(event.getPlayer().getUniqueId()).thenAccept(color -> {
-            if (color == 0) { //New player
+            if (color == 0 || color == null) { //new player
                 this.getDatabaseManager().savePlayerData(
                         event.getPlayer().getUniqueId(),
                         event.getPlayer().getName(),
@@ -232,6 +242,15 @@ public class Wafelzwaardutils extends JavaPlugin {
         referCommand.setPermission("wafelzwaardutils.refer");
         referCommand.setUsage("/refer <code>");
         getServer().getCommandMap().register("wafelzwaardutils", referCommand);
+
+        //gemshop command
+        PluginCommand gemshopCommand = createCommand("gemshop");
+        gemshopCommand.setExecutor(new GemShopCommand(this, gemShopGUI));
+        gemshopCommand.setDescription("Open the gem shop");
+        gemshopCommand.setPermission("wafelzwaardutils.gemshop");
+        gemshopCommand.setUsage("/gemshop");
+        gemshopCommand.setAliases(Arrays.asList("store", "gshop"));
+        getServer().getCommandMap().register("wafelzwaardutils", gemshopCommand);
 
         getLogger().info("Commands registered successfully!");
     }

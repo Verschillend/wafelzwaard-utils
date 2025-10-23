@@ -28,7 +28,7 @@ public class InviteCommand implements CommandExecutor {
         boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
         if (oneblock) {
             if (args.length > 0) {
-                Bukkit.dispatchCommand(sender, "ob invite " + args[0]);
+                Bukkit.dispatchCommand(sender, "oneblock invite " + args[0]);
                 return true;
             }
         }

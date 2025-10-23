@@ -2,6 +2,7 @@ package me.verschillend.wafelzwaardutils.commands;
 
 import me.verschillend.wafelzwaardutils.Wafelzwaardutils;
 import me.verschillend.wafelzwaardutils.gui.ReferralGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +31,23 @@ public class ReferralCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            referralGUI.openGUI(player);
+            plugin.getDatabaseManager().getPlayerReferralCode(player.getUniqueId()).thenAccept(code -> {
+                if (code != null) {
+                    referralGUI.openGUI(player);
+                } else {
+                    player.sendMessage("§cGenerating your referral code...");
+                    plugin.getDatabaseManager().generateReferralCode(player.getUniqueId()).thenAccept(newCode -> {
+                        if (newCode != null) {
+                            referralGUI.openGUI(player);
+                        } else {
+                            player.sendMessage("§cFailed to generate referral code! Please contact an admin.");
+                            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                referralGUI.openGUI(player);
+                            }, 10L);
+                        }
+                    });
+                }
+            });
             return true;
         }
 
@@ -74,7 +91,23 @@ public class ReferralCommand implements CommandExecutor {
             }
 
             default -> {
-                referralGUI.openGUI(player);
+                plugin.getDatabaseManager().getPlayerReferralCode(player.getUniqueId()).thenAccept(code -> {
+                    if (code != null) {
+                        referralGUI.openGUI(player);
+                    } else {
+                        player.sendMessage("§cGenerating your referral code...");
+                        plugin.getDatabaseManager().generateReferralCode(player.getUniqueId()).thenAccept(newCode -> {
+                            if (newCode != null) {
+                                referralGUI.openGUI(player);
+                            } else {
+                                player.sendMessage("§cFailed to generate referral code! Please contact an admin.");
+                                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                                    referralGUI.openGUI(player);
+                                }, 10L);
+                            }
+                        });
+                    }
+                });
             }
         }
 
