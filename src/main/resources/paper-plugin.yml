@@ -33,6 +33,9 @@ permissions:
   wafelzwaardutils.discord:
     description: Allows /discord command
     default: true
+  wafelzwaardutils.troll:
+    description: Allows /troll command
+    default: op
   wafelzwaardutils.gems:
     description: Allows checking own gems
     default: true
@@ -48,6 +51,12 @@ permissions:
   wafelzwaardutils.gemshop:
     description: Access to gem shop
     default: true
+  wafelzwaardutils.blackjack:
+    description: Play blackjack
+    default: true
+  wafelzwaardutils.dealer:
+    description: Manage dealer gems
+    default: op
 
 dependencies:
   server:

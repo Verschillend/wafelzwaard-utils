@@ -2,6 +2,7 @@ package me.verschillend.wafelzwaardutils;
 
 import com.jellypudding.simpleVote.SimpleVote;
 import me.verschillend.wafelzwaardutils.commands.*;
+import me.verschillend.wafelzwaardutils.config.DealerConfig;
 import me.verschillend.wafelzwaardutils.config.GemShopConfig;
 import me.verschillend.wafelzwaardutils.database.DatabaseManager;
 import me.verschillend.wafelzwaardutils.gui.*;
@@ -33,10 +34,13 @@ public class Wafelzwaardutils extends JavaPlugin {
     private ReferralGUI referralGUI;
     private GemShopConfig gemShopConfig;
     private GemShopGUI gemShopGUI;
+    private DealerConfig dealerConfig;
+    private BlackjackGUI blackjackGUI;
 
     public ReferralGUI getReferralGUI() {
         return referralGUI;
     }
+    public DealerConfig getDealerConfig() { return dealerConfig; }
 
     @Override
     public void onEnable() {
@@ -50,7 +54,8 @@ public class Wafelzwaardutils extends JavaPlugin {
 
         //initialize gem shop config
         gemShopConfig = new GemShopConfig(this);
-        getLogger().info("GemShop config initialized!");
+        dealerConfig = new DealerConfig(this);
+        getLogger().info("Configs initialized!");
 
         // Initialize GUI
         BwGUI = new BwGUI(this);
@@ -58,6 +63,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         suffixGUI = new SuffixGUI(this);
         referralGUI = new ReferralGUI(this);
         gemShopGUI = new GemShopGUI(this, gemShopConfig);
+        blackjackGUI = new BlackjackGUI(this, dealerConfig);
         getLogger().info("Guis initialized!");
 
         // Register commands
@@ -120,6 +126,7 @@ public class Wafelzwaardutils extends JavaPlugin {
     }
     public GemShopConfig getGemShopConfig() { return gemShopConfig; }
     public GemShopGUI getGemShopGUI() { return gemShopGUI; }
+    public BlackjackGUI getBlackjackGUI() { return blackjackGUI; }
 
     public void onPlayerJoin(PlayerJoinEvent event) {
         Boolean join = this.getConfig().getBoolean("server.lobby", false);
@@ -251,6 +258,31 @@ public class Wafelzwaardutils extends JavaPlugin {
         gemshopCommand.setUsage("/gemshop");
         gemshopCommand.setAliases(Arrays.asList("store", "gshop"));
         getServer().getCommandMap().register("wafelzwaardutils", gemshopCommand);
+
+        //blackjack command
+        PluginCommand blackjackCommand = createCommand("blackjack");
+        blackjackCommand.setExecutor(new BlackjackCommand(this, blackjackGUI));
+        blackjackCommand.setDescription("Play blackjack");
+        blackjackCommand.setPermission("wafelzwaardutils.blackjack");
+        blackjackCommand.setUsage("/blackjack");
+        blackjackCommand.setAliases(Arrays.asList("bj"));
+        getServer().getCommandMap().register("wafelzwaardutils", blackjackCommand);
+
+        //dealer command
+        PluginCommand dealerCommand = createCommand("dealer");
+        dealerCommand.setExecutor(new DealerCommand(this, dealerConfig));
+        dealerCommand.setDescription("Manage dealer gems");
+        dealerCommand.setPermission("wafelzwaardutils.dealer");
+        dealerCommand.setUsage("/dealer <add|remove|set> <amount>");
+        getServer().getCommandMap().register("wafelzwaardutils", dealerCommand);
+
+        //troll command
+        PluginCommand trollCommand = createCommand("troll");
+        trollCommand.setExecutor(new TrollCommand(this));
+        trollCommand.setDescription("Manage trolls");
+        trollCommand.setPermission("wafelzwaardutils.troll");
+        trollCommand.setUsage("/troll <demo|win|hurt|elderguardian> <player>");
+        getServer().getCommandMap().register("wafelzwaardutils", trollCommand);
 
         getLogger().info("Commands registered successfully!");
     }
