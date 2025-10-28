@@ -92,6 +92,16 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
             }
         }
 
+        // %wafelzwaard_playerse%
+        if (params.equalsIgnoreCase("players")) {
+            try {
+                int total = plugin.getDatabaseManager().getTotalPlayerCount().get();
+                return String.valueOf(total);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+
         return null;
     }
 

@@ -212,6 +212,23 @@ public class DatabaseManager {
         });
     }
 
+    public CompletableFuture<Integer> getTotalPlayerCount() {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT SUM(player_count) AS total FROM server_player_counts";
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to get total player count: " + e.getMessage());
+            }
+            return 0;
+        });
+    }
+
+
     public CompletableFuture<Character> getPlayerColor(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             String sql = "SELECT color FROM player_data WHERE uuid = ?";
