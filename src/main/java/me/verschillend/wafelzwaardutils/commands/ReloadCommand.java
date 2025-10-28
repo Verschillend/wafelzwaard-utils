@@ -16,6 +16,7 @@ public class ReloadCommand implements CommandExecutor {
 
     private final Wafelzwaardutils plugin;
     private BukkitTask broadcastTask;
+    private BukkitTask serverTask;
     private final Random random = new Random();
 
     public ReloadCommand(Wafelzwaardutils plugin) {
@@ -78,11 +79,30 @@ public class ReloadCommand implements CommandExecutor {
             String message = broadcasts.get(random.nextInt(broadcasts.size()));
             Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
         }, 0L, 6000L); // every 5 mins
+        boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
+        boolean lobby = plugin.getConfig().getBoolean("server.lobby", false);
+        boolean fbf = plugin.getConfig().getBoolean("server.fbf", false);
+        serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            int count = Bukkit.getOnlinePlayers().size();
+            if (oneblock) {
+                plugin.getDatabaseManager().updateServerPlayerCount("oneblock", count);
+            }
+            if (lobby) {
+                plugin.getDatabaseManager().updateServerPlayerCount("lobby", count);
+            }
+            if (fbf) {
+                plugin.getDatabaseManager().updateServerPlayerCount("fireball-fight-1", count);
+            }
+        }, 0L, 15 * 20L); // every 15 seconds
+
     }
 
     private void restartBroadcastLoop() {
         if (broadcastTask != null && !broadcastTask.isCancelled()) {
             broadcastTask.cancel();
+        }
+        if (serverTask != null && !serverTask.isCancelled()) {
+            serverTask.cancel();
         }
         startBroadcastLoop();
     }

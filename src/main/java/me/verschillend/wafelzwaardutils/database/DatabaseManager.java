@@ -89,11 +89,22 @@ public class DatabaseManager {
         )
         """;
 
+        String playerCountSql = """
+        CREATE TABLE IF NOT EXISTS server_player_counts (
+            server_name VARCHAR(32) PRIMARY KEY,
+            player_count INT DEFAULT 0,
+            last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+        """;
+
         try (Connection conn = dataSource.getConnection()) {
             try (PreparedStatement stmt = conn.prepareStatement(playerDataSql)) {
                 stmt.executeUpdate();
             }
             try (PreparedStatement stmt = conn.prepareStatement(referralsSql)) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(playerCountSql)) {
                 stmt.executeUpdate();
             }
             plugin.getLogger().info("Database tables created successfully!");
@@ -102,8 +113,43 @@ public class DatabaseManager {
         }
     }
 
+    public CompletableFuture<Void> updateServerPlayerCount(String serverName, int count) {
+        return CompletableFuture.runAsync(() -> {
+            String sql = """
+        INSERT INTO server_player_counts (server_name, player_count)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE player_count = VALUES(player_count),
+                                last_update = CURRENT_TIMESTAMP
+        """;
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, serverName);
+                stmt.setInt(2, count);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to update player count: " + e.getMessage());
+            }
+        });
+    }
+
+    public CompletableFuture<Integer> getServerPlayerCount(String serverName) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT player_count FROM server_player_counts WHERE server_name = ?";
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, serverName);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) return rs.getInt("player_count");
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Failed to get player count: " + e.getMessage());
+            }
+            return 0;
+        });
+    }
+
     private void updateTables() {
-        // Add missing columns if they don't exist
+        //add missing columns if they don't exist
         String[] alterStatements = {
                 "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS gems DOUBLE DEFAULT 0.0",
                 "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS referral_code VARCHAR(8) UNIQUE",
@@ -112,22 +158,37 @@ public class DatabaseManager {
         };
 
         try (Connection conn = dataSource.getConnection()) {
+            //update existing player_data table
             for (String sql : alterStatements) {
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.executeUpdate();
                     plugin.getLogger().info("Updated table structure: " + sql);
                 } catch (SQLException e) {
-                    // Column might already exist, this is usually fine
                     if (!e.getMessage().contains("Duplicate column")) {
                         plugin.getLogger().warning("Failed to update table: " + e.getMessage());
                     }
                 }
             }
+
+            //ensure server_player_counts table exists
+            String createServerCountTable = """
+            CREATE TABLE IF NOT EXISTS server_player_counts (
+                server_name VARCHAR(32) PRIMARY KEY,
+                player_count INT DEFAULT 0,
+                last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+            """;
+            try (PreparedStatement stmt = conn.prepareStatement(createServerCountTable)) {
+                stmt.executeUpdate();
+                plugin.getLogger().info("Ensured server_player_counts table exists.");
+            }
+
             plugin.getLogger().info("Table structure update completed!");
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to update tables: " + e.getMessage());
         }
     }
+
 
     //async method to save player data
     public CompletableFuture<Void> savePlayerData(UUID uuid, String playerName, char color, double gems) {

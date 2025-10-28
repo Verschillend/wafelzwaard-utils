@@ -58,6 +58,17 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
             }
         }
 
+        // %wafelzwaard_playercount_lobby%, %wafelzwaard_playercount_oneblock%, etc.
+        if (params.startsWith("playercount_")) {
+            String serverName = params.substring("playercount_".length());
+            try {
+                int count = plugin.getDatabaseManager().getServerPlayerCount(serverName).get();
+                return String.valueOf(count);
+            } catch (Exception e) {
+                return "0";
+            }
+        }
+
         // %wafelzwaard_gems_formatted%
         if (params.equals("gems_formatted")) {
             try {
