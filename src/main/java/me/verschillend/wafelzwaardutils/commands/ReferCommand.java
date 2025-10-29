@@ -40,13 +40,13 @@ public class ReferCommand implements CommandExecutor {
 
         String referralCode = args[0].toUpperCase().trim();
 
-        // Basic validation
+        // basic validation
         if (referralCode.length() < 3 || referralCode.length() > 10) {
             player.sendMessage("§cInvalid referral code format!");
             return true;
         }
 
-        //save data just in case
+        // save data just in case
         CompletableFuture<Double> future = plugin.getDatabaseManager().getPlayerGems(player.getUniqueId());
         Double result = null;
         try {
@@ -65,57 +65,57 @@ public class ReferCommand implements CommandExecutor {
             plugin.getDatabaseManager().savePlayerData(player.getUniqueId(), player.getName(), result2, 0.0).join();
         }
 
-        // Check if player was already referred
+        // check if player was already referred
         plugin.getDatabaseManager().wasPlayerReferred(player.getUniqueId()).thenAccept(wasReferred -> {
             if (wasReferred) {
                 player.sendMessage("§cYou have already been referred by someone!");
                 return;
             }
 
-            // Check if player has referred someone (prevents them from being referred)
+            // check if player has referred someone (prevents them from being referred)
             plugin.getDatabaseManager().hasReferredSomeone(player.getUniqueId()).thenAccept(hasReferred -> {
                 if (hasReferred) {
                     player.sendMessage("§cYou cannot be referred because you have already referred someone!");
                     return;
                 }
 
-                // Process the referral
+                // process the referral
                 plugin.getDatabaseManager().processReferral(player.getUniqueId(), referralCode).thenAccept(success -> {
                     if (success) {
                         player.sendMessage("§a§lREFERRAL SUCCESS!");
                         player.sendMessage("§aYou have been successfully referred!");
 
-                        //reward the REFERRED player (person who used the code)
+                        // reward the referred player (person who used the code)
                         executeReferralCommands("referral.referred-player-commands", player.getName());
 
-                        // Get referrer and reward them + notify + check milestones
+                        // get referrer and reward them + notify + check milestones
                         plugin.getDatabaseManager().getPlayerByReferralCode(referralCode).thenAccept(referrerUuidStr -> {
                             if (referrerUuidStr != null) {
                                 java.util.UUID referrerUuid = java.util.UUID.fromString(referrerUuidStr);
                                 Player referrer = Bukkit.getPlayer(referrerUuid);
 
                                 if (referrer != null) {
-                                    // Online referrer - use commands and notify
+                                    // online referrer - use commands and notify
                                     executeReferralCommands("referral.referrer-commands", referrer.getName());
 
                                     referrer.sendMessage("§a§l🎉 " + player.getName() + " used your referral code!");
                                     referrer.sendMessage("§aYou earned rewards for the referral!");
 
-                                    // Check milestones
+                                    // check milestones
                                     plugin.getDatabaseManager().getReferralCount(referrer.getUniqueId()).thenAccept(count -> {
                                         referrer.sendMessage("§7Total referrals: §e" + count);
                                         checkMilestones(referrer, count);
                                     });
                                 } else {
-                                    // Offline referrer - give gems directly to database
+                                    // offline referrer - give gems directly to database
                                     double referrerGems = plugin.getConfig().getDouble("referral.referrer-gems", 50.0);
                                     plugin.getDatabaseManager().addPlayerGems(referrerUuid, "OFFLINE_PLAYER", referrerGems).thenAccept(newAmount -> {
                                         plugin.getLogger().info("Gave " + referrerGems + " gems to offline referrer " + referrerUuid);
                                     });
 
-                                    // Check milestones for offline player
+                                    // check milestones for offline player
                                     plugin.getDatabaseManager().getReferralCount(referrerUuid).thenAccept(count -> {
-                                        // Log milestone achievement for offline player
+                                        // log milestone achievement for offline player
                                         checkOfflineMilestones(referrerUuid, count);
                                     });
                                 }
@@ -159,24 +159,24 @@ public class ReferCommand implements CommandExecutor {
                 if (referralCount == requiredReferrals) { // Exactly reached this milestone
                     ConfigurationSection milestoneConfig = milestonesSection.getConfigurationSection(milestoneKey);
                     if (milestoneConfig != null) {
-                        // Notify player
+                        // notify player
                         player.sendMessage("§6§l✨ MILESTONE REACHED! ✨");
                         player.sendMessage("§aYou reached §6" + requiredReferrals + " §areferrals!");
 
                         String description = milestoneConfig.getString("description", "Milestone reward");
                         player.sendMessage("§aReward: §6" + description);
 
-                        // Execute milestone rewards
+                        // execute milestone rewards
                         executeMilestoneRewards(milestoneConfig, player.getName());
 
-                        // Broadcast milestone achievement (optional)
+                        // broadcast milestone achievement (optional)
                         if (plugin.getConfig().getBoolean("referral.broadcast-milestones", false)) {
                             Bukkit.broadcastMessage("§6" + player.getName() + " §areached §6" + requiredReferrals + " §areferrals! 🎉");
                         }
                     }
                 }
             } catch (NumberFormatException ignored) {
-                // Skip invalid milestone keys
+                // skip invalid milestone keys
                 plugin.getLogger().warning("Invalid milestone key in config: " + milestoneKey);
             }
         }
@@ -192,7 +192,7 @@ public class ReferCommand implements CommandExecutor {
                 if (referralCount == requiredReferrals) { // Exactly reached this milestone
                     ConfigurationSection milestoneConfig = milestonesSection.getConfigurationSection(milestoneKey);
                     if (milestoneConfig != null) {
-                        // Execute milestone rewards for offline player
+                        // execute milestone rewards for offline player
                         String offlinePlayerName = Bukkit.getOfflinePlayer(playerUuid).getName();
                         if (offlinePlayerName != null) {
                             executeMilestoneRewards(milestoneConfig, offlinePlayerName);
@@ -201,13 +201,13 @@ public class ReferCommand implements CommandExecutor {
                     }
                 }
             } catch (NumberFormatException ignored) {
-                // Skip invalid milestone keys
+                // skip invalid milestone keys
             }
         }
     }
 
     private void executeMilestoneRewards(ConfigurationSection milestoneConfig, String playerName) {
-        // Handle single command (backwards compatibility)
+        // handle single command (backwards compatibility)
         if (milestoneConfig.contains("command")) {
             String command = milestoneConfig.getString("command", "").replace("%player%", playerName);
             if (!command.isEmpty()) {
@@ -221,7 +221,7 @@ public class ReferCommand implements CommandExecutor {
             }
         }
 
-        // Handle multiple commands
+        // handle multiple commands
         if (milestoneConfig.contains("commands")) {
             List<String> commands = milestoneConfig.getStringList("commands");
             for (String cmd : commands) {

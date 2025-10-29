@@ -33,7 +33,7 @@ public class BlackjackGUI implements Listener {
     }
 
     public void openBetGUI(Player player) {
-        // Check if lobby server
+        // check if lobby server
         if (!plugin.getConfig().getBoolean("server.lobby", false)) {
             player.sendMessage("§cBlackjack is not available on this server!");
             return;
@@ -52,7 +52,7 @@ public class BlackjackGUI implements Listener {
     }
 
     private void setupBetGUI(Inventory gui, Player player, double playerGems, double dealerGems) {
-        // Bet options
+        // bet options
         double[] betAmounts = {10, 25, 50, 100, 250, 500, 1000};
         int[] slots = {10, 11, 12, 13, 14, 15, 16};
 
@@ -60,21 +60,21 @@ public class BlackjackGUI implements Listener {
             double bet = betAmounts[i];
 
             if (bet > playerGems) {
-                // Can't afford
+                // cant afford
                 gui.setItem(slots[i], createItem(Material.RED_STAINED_GLASS_PANE,
                         "§c" + String.format("%.0f", bet) + " Gems",
                         "§7You need §6" + String.format("%.2f", bet) + " §7gems",
                         "§cYou only have §6" + String.format("%.2f", playerGems) + " §7gems"
                 ));
             } else if (bet > dealerGems) {
-                // Dealer can't cover
+                // dealer cant cover
                 gui.setItem(slots[i], createItem(Material.ORANGE_STAINED_GLASS_PANE,
                         "§6" + String.format("%.0f", bet) + " Gems",
                         "§7Dealer has insufficient gems",
                         "§cDealer has §6" + String.format("%.2f", dealerGems) + " §7gems"
                 ));
             } else {
-                // Available bet
+                // available bet
                 gui.setItem(slots[i], createItem(Material.GREEN_STAINED_GLASS_PANE,
                         "§a" + String.format("%.0f", bet) + " Gems",
                         "§7Click to bet §6" + String.format("%.2f", bet) + " §7gems"
@@ -82,7 +82,7 @@ public class BlackjackGUI implements Listener {
             }
         }
 
-        // Info
+        // info
         gui.setItem(4, createItem(Material.EMERALD,
                 "§6§lYour Gems",
                 "§7Balance: §6" + String.format("%.2f", playerGems) + " §7gems"
@@ -93,20 +93,20 @@ public class BlackjackGUI implements Listener {
                 "§7Balance: §6" + String.format("%.2f", dealerGems) + " §7gems"
         ));
 
-        // Close
-        gui.setItem(26, createItem(Material.RED_STAINED_GLASS_PANE, "§cClose", "§7Click to close"));
+        // close
+        gui.setItem(26, createItem(Material.BARRIER, "§cClose", "§7Click to close"));
     }
 
     public void startGame(Player player, double bet) {
         BlackjackGame game = new BlackjackGame(bet);
         activeGames.put(player.getUniqueId(), game);
 
-        // Deduct bet from player
+        // remove bet from player
         plugin.getDatabaseManager().removePlayerGems(player.getUniqueId(), player.getName(), bet);
 
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 1.0f);
 
-        // Check for immediate blackjack
+        // check for immediate blackjack
         if (game.getState() == BlackjackGame.GameState.PLAYER_BLACKJACK) {
             endGame(player, game);
         } else if (game.getState() == BlackjackGame.GameState.DEALER_BLACKJACK) {
@@ -126,7 +126,7 @@ public class BlackjackGUI implements Listener {
     }
 
     private void setupGameGUI(Inventory gui, Player player, BlackjackGame game) {
-        // Dealer's hand (top row, starting at slot 10)
+        // dealers hand (top row, starting at slot 10)
         List<BlackjackGame.Card> dealerHand = game.getDealerHand();
         gui.setItem(4, createItem(Material.SKELETON_SKULL,
                 "§c§lDealer's Hand",
@@ -149,7 +149,7 @@ public class BlackjackGUI implements Listener {
             }
         }
 
-        // Player's hand (middle row, starting at slot 28)
+        // player's hand (middle row, starting at slot 28)
         List<BlackjackGame.Card> playerHand = game.getPlayerHand();
         int playerValue = game.getHandValue(playerHand);
         gui.setItem(22, createItem(Material.PLAYER_HEAD,
@@ -165,7 +165,7 @@ public class BlackjackGUI implements Listener {
             ));
         }
 
-        // Action buttons (bottom row)
+        // action buttons (bottom row)
         if (game.getState() == BlackjackGame.GameState.PLAYING) {
             gui.setItem(45, createItem(Material.LIME_STAINED_GLASS_PANE,
                     "§a§lHIT",
@@ -178,7 +178,7 @@ public class BlackjackGUI implements Listener {
             ));
         }
 
-        // Info
+        // info
         gui.setItem(49, createItem(Material.GOLD_INGOT,
                 "§6§lBet Amount",
                 "§7Current bet: §6" + String.format("%.2f", game.getBet()) + " §7gems"
@@ -189,15 +189,15 @@ public class BlackjackGUI implements Listener {
         double payout = game.calculatePayout();
         double dealerChange = game.getBet() - payout;
 
-        // Update dealer gems
+        // update dealer gems
         dealerConfig.addDealerGems(dealerChange);
 
-        // Give player payout
+        // give player payout
         if (payout > 0) {
             plugin.getDatabaseManager().addPlayerGems(player.getUniqueId(), player.getName(), payout);
         }
 
-        // Play sound based on result
+        // play sound based on result
         switch (game.getState()) {
             case PLAYER_BLACKJACK, PLAYER_WIN, DEALER_BUST -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
@@ -297,12 +297,12 @@ public class BlackjackGUI implements Listener {
     private void handleBetClick(Player player, int slot, ItemStack item) {
         if (item == null || !item.hasItemMeta()) return;
 
-        if (slot == 26) { // Close
+        if (slot == 26) { // close
             player.closeInventory();
             return;
         }
 
-        // Check if it's a bet button
+        // check if it's a bet button
         int[] betSlots = {10, 11, 12, 13, 14, 15, 16};
         double[] betAmounts = {10, 25, 50, 100, 250, 500, 1000};
 
@@ -320,26 +320,26 @@ public class BlackjackGUI implements Listener {
         BlackjackGame game = activeGames.get(player.getUniqueId());
         if (game == null || game.getState() != BlackjackGame.GameState.PLAYING) return;
 
-        if (slot == 45) { // HIT
+        if (slot == 45) { // hit
             game.playerHit();
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
 
-            // Check if player busted or reached 21
+            // check if player busted or reached 21
             if (game.getState() == BlackjackGame.GameState.PLAYER_BUST) {
-                // Player busted, end game
+                // player busted, end game
                 endGame(player, game);
             } else if (game.getHandValue(game.getPlayerHand()) == 21) {
-                // Player reached 21, auto-stand
+                // player reached 21, auto-stand
                 player.sendMessage("§6You reached 21! Auto-standing...");
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.5f);
                 game.playerStand();
                 endGame(player, game);
             } else {
-                // Still playing, refresh GUI to show new card
+                // still playing, refresh GUI to show new card
                 openGameGUI(player);
             }
         }
-        else if (slot == 53) { // STAND
+        else if (slot == 53) { // stand
             game.playerStand();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 1.0f);
             endGame(player, game);
@@ -347,11 +347,11 @@ public class BlackjackGUI implements Listener {
     }
 
     private void handleResultClick(Player player, int slot) {
-        if (slot == 45) { // Play again
+        if (slot == 45) { // play again
             activeGames.remove(player.getUniqueId());
             player.closeInventory();
             openBetGUI(player);
-        } else if (slot == 53) { // Close
+        } else if (slot == 53) { // close
             activeGames.remove(player.getUniqueId());
             player.closeInventory();
         }
@@ -363,11 +363,11 @@ public class BlackjackGUI implements Listener {
 
         String title = event.getView().getTitle();
 
-        // Clean up game if player closes during gameplay
+        // clean up game if player closes during gameplay
         if (title.equals(GAME_GUI_TITLE)) {
             BlackjackGame game = activeGames.get(player.getUniqueId());
             if (game != null && game.getState() == BlackjackGame.GameState.PLAYING) {
-                // Auto-stand if player closes GUI
+                // auto stand if player closes GUI
                 game.playerStand();
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (player.isOnline()) {

@@ -67,7 +67,7 @@ public class GemShopGUI implements Listener {
             return;
         }
 
-        // Load main menu items (decorative/info items)
+        // load main menu items (decorative/info items)
         ConfigurationSection itemsSection = mainSection.getConfigurationSection("items");
         if (itemsSection != null) {
             for (String itemKey : itemsSection.getKeys(false)) {
@@ -84,14 +84,14 @@ public class GemShopGUI implements Listener {
             }
         }
 
-        // Load sections in top row (slots 0-8)
+        // load sections in top row (slots 0-8)
         ConfigurationSection sectionsConfig = gemShopConfig.getConfig().getConfigurationSection("sections");
         if (sectionsConfig != null) {
             List<String> sectionKeys = new ArrayList<>(sectionsConfig.getKeys(false));
             int slotIndex = 0;
 
             for (String sectionKey : sectionKeys) {
-                if (slotIndex >= 9) break; // Only top row
+                if (slotIndex >= 9) break; // only top row
 
                 ConfigurationSection sectionConfig = sectionsConfig.getConfigurationSection(sectionKey);
                 if (sectionConfig == null) continue;
@@ -126,13 +126,13 @@ public class GemShopGUI implements Listener {
             }
         }
 
-        // Gem balance (slot 53 - bottom right)
+        // gem balance (slot 53 - bottom right)
         gui.setItem(53, createItem(Material.EMERALD,
                 "§aYour Gems",
                 "§7Balance: §6" + String.format("%.2f", gems) + " §7gems"
         ));
 
-        // Close button (slot 49 - bottom middle)
+        // close button (slot 49 - bottom middle)
         gui.setItem(49, createItem(Material.BARRIER, "§cClose Menu", "§7Click to close"));
     }
 
@@ -163,7 +163,7 @@ public class GemShopGUI implements Listener {
             return;
         }
 
-        // Load section items
+        // load section items
         for (String itemKey : itemsSection.getKeys(false)) {
             ConfigurationSection itemConfig = itemsSection.getConfigurationSection(itemKey);
             if (itemConfig == null) continue;
@@ -173,11 +173,11 @@ public class GemShopGUI implements Listener {
 
             ItemStack item = createConfiguredItem(itemConfig);
             if (item != null) {
-                // Check if item requires permission
+                // check if item requires permission
                 String requiredPermission = itemConfig.getString("required-permission", "");
                 boolean hasPermission = requiredPermission.isEmpty() || player.hasPermission(requiredPermission);
 
-                // Add price and permission info to lore if it's a shop item
+                // add price and permission info to lore if it's a shop item
                 if (itemConfig.getBoolean("shop-item", true)) {
                     double price = itemConfig.getDouble("price", 0.0);
                     ItemMeta meta = item.getItemMeta();
@@ -185,7 +185,7 @@ public class GemShopGUI implements Listener {
                     lore.add("");
 
                     if (!hasPermission) {
-                        //item is locked
+                        // item is locked
                         lore.add("§7Required permission:");
                         lore.add("§e" + requiredPermission);
                     } else {
@@ -201,30 +201,30 @@ public class GemShopGUI implements Listener {
             }
         }
 
-        // Gem balance (slot 53)
+        // gem balance (slot 53)
         gui.setItem(53, createItem(Material.EMERALD,
                 "§aYour Gems",
                 "§7Balance: §6" + String.format("%.2f", gems) + " §7gems"
         ));
 
-        // Back button (slot 45)
+        // back button (slot 45)
         gui.setItem(45, createItem(Material.ARROW, "§eBack to Main Menu", "§7Click to go back"));
 
-        // Close button (slot 49)
+        // close button (slot 49)
         gui.setItem(49, createItem(Material.BARRIER, "§cClose Menu", "§7Click to close"));
     }
 
     public void openInsufficientGemsGUI(Player player) {
         Inventory gui = Bukkit.createInventory(null, 27, CONFIRM_GUI_TITLE);
 
-        // Emerald block - go to store
+        // emerald block - go to store
         gui.setItem(11, createItem(Material.EMERALD_BLOCK,
                 "§a§lVisit Store",
                 "§7Click to visit our store",
                 "§7to purchase more gems!"
         ));
 
-        // Redstone block - close
+        // redstone block - close
         gui.setItem(15, createItem(Material.REDSTONE_BLOCK,
                 "§c§lCancel",
                 "§7Click to close"
@@ -236,10 +236,10 @@ public class GemShopGUI implements Listener {
     public void openPurchaseConfirmGUI(Player player, String sectionKey, String itemKey, double price, String itemName) {
         Inventory gui = Bukkit.createInventory(null, 27, CONFIRM_PURCHASE_TITLE);
 
-        // Store purchase data
+        // store purchase data
         pendingPurchases.put(player.getUniqueId(), new PurchaseData(sectionKey, itemKey, price, itemName));
 
-        // Emerald block - confirm purchase
+        // emerald block - confirm purchase
         gui.setItem(11, createItem(Material.EMERALD_BLOCK,
                 "§a§lConfirm Purchase",
                 "§7Item: " + itemName,
@@ -248,7 +248,7 @@ public class GemShopGUI implements Listener {
                 "§eClick to confirm!"
         ));
 
-        // Redstone block - cancel
+        // redstone block - cancel
         gui.setItem(15, createItem(Material.REDSTONE_BLOCK,
                 "§c§lCancel",
                 "§7Click to cancel purchase"
@@ -313,22 +313,22 @@ public class GemShopGUI implements Listener {
 
         String title = event.getView().getTitle();
 
-        // Handle main GUI
+        // handle main GUI
         if (title.equals(MAIN_GUI_TITLE)) {
             event.setCancelled(true);
             handleMainGUIClick(player, event.getSlot());
         }
-        // Handle section GUI
+        // handle section GUI
         else if (title.startsWith(SECTION_GUI_TITLE)) {
             event.setCancelled(true);
             handleSectionGUIClick(player, event.getSlot(), event.getCurrentItem());
         }
-        // Handle insufficient gems GUI
+        // handle insufficient gems GUI
         else if (title.equals(CONFIRM_GUI_TITLE)) {
             event.setCancelled(true);
             handleInsufficientGemsClick(player, event.getSlot());
         }
-        // Handle purchase confirmation GUI
+        // handle purchase confirmation GUI
         else if (title.equals(CONFIRM_PURCHASE_TITLE)) {
             event.setCancelled(true);
             handlePurchaseConfirmClick(player, event.getSlot());
@@ -336,7 +336,7 @@ public class GemShopGUI implements Listener {
     }
 
     private void handleMainGUIClick(Player player, int slot) {
-        // Check if clicked on a section (top row slots 0-8)
+        // check if clicked on a section (top row slots 0-8)
         if (slot >= 0 && slot < 9) {
             ConfigurationSection sectionsConfig = gemShopConfig.getConfig().getConfigurationSection("sections");
             if (sectionsConfig != null) {
@@ -346,7 +346,7 @@ public class GemShopGUI implements Listener {
                 }
             }
         }
-        // Close button
+        // close button
         else if (slot == 49) {
             player.closeInventory();
         }
@@ -355,42 +355,42 @@ public class GemShopGUI implements Listener {
     private void handleSectionGUIClick(Player player, int slot, ItemStack clickedItem) {
         if (clickedItem == null || !clickedItem.hasItemMeta()) return;
 
-        // Back button
+        // back button
         if (slot == 45) {
             openMainGUI(player);
             return;
         }
 
-        // Close button
+        // close button
         if (slot == 49) {
             player.closeInventory();
             return;
         }
 
-        // Gem balance display
+        // gem balance display
         if (slot == 53) {
             return;
         }
 
-        // Handle item purchase
+        // handle item purchase
         String sectionKey = playerCurrentSection.get(player.getUniqueId());
         if (sectionKey == null) return;
 
         ConfigurationSection itemsSection = gemShopConfig.getConfig().getConfigurationSection("sections." + sectionKey + ".items");
         if (itemsSection == null) return;
 
-        // Find the item config by slot
+        // find the item config by slot
         for (String itemKey : itemsSection.getKeys(false)) {
             ConfigurationSection itemConfig = itemsSection.getConfigurationSection(itemKey);
             if (itemConfig == null) continue;
 
             if (itemConfig.getInt("slot", -1) == slot) {
-                // Check if it's a shop item
+                // check if it's a shop item
                 if (!itemConfig.getBoolean("shop-item", true)) {
-                    return; // Not purchasable
+                    return; // not purchasable
                 }
 
-                // Check if player has required permission (if specified)
+                // check if player has required permission (if specified)
                 String requiredPermission = itemConfig.getString("required-permission", "");
                 if (!requiredPermission.isEmpty() && !player.hasPermission(requiredPermission)) {
                     player.sendMessage("§c§lNO PERMISSION!");
@@ -400,7 +400,7 @@ public class GemShopGUI implements Listener {
 
                 double price = itemConfig.getDouble("price", 0.0);
 
-                // Open confirmation GUI instead of immediate purchase
+                // open confirmation GUI instead of immediate purchase
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     openPurchaseConfirmGUI(player, sectionKey, itemKey, price, clickedItem.getItemMeta().getDisplayName());
                 });
@@ -410,7 +410,7 @@ public class GemShopGUI implements Listener {
     }
 
     private void handleInsufficientGemsClick(Player player, int slot) {
-        if (slot == 11) { // Emerald block - go to store
+        if (slot == 11) { // emerald block - go to store
             String storeURL = gemShopConfig.getConfig().getString("store-url", "https://example.com/store");
             player.closeInventory();
             player.sendMessage(Component.text("§a§lVisit our store: §e" + storeURL));
@@ -418,7 +418,7 @@ public class GemShopGUI implements Listener {
                     Component.text("§b§n" + storeURL)
                             .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(storeURL))
             ));
-        } else if (slot == 15) { // Redstone block - cancel
+        } else if (slot == 15) { // redstone block - cancel
             player.closeInventory();
         }
     }
@@ -432,18 +432,18 @@ public class GemShopGUI implements Listener {
         }
 
         if (slot == 11) { // Confirm purchase
-            // Check if player has enough gems
+            // check if player has enough gems
             plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).thenAccept(gems -> {
                 if (gems >= purchaseData.price) {
-                    // Process purchase
+                    // process purchase
                     plugin.getDatabaseManager().removePlayerGems(player.getUniqueId(), player.getName(), purchaseData.price).thenAccept(newBalance -> {
-                        // Get item config to execute commands
+                        // get item config to execute commands
                         ConfigurationSection itemConfig = gemShopConfig.getConfig().getConfigurationSection(
                                 "sections." + purchaseData.sectionKey + ".items." + purchaseData.itemKey
                         );
 
                         if (itemConfig != null) {
-                            // Execute purchase commands
+                            // execute purchase commands
                             List<String> commands = itemConfig.getStringList("commands");
                             for (String cmd : commands) {
                                 String processedCommand = cmd.replace("%player%", player.getName());
@@ -458,14 +458,14 @@ public class GemShopGUI implements Listener {
                         player.sendMessage("§7Cost: §6" + String.format("%.2f", purchaseData.price) + " §7gems");
                         player.sendMessage("§7New Balance: §6" + String.format("%.2f", newBalance) + " §7gems");
 
-                        // Clean up and go back to section GUI
+                        // clean up and go back to section GUI
                         pendingPurchases.remove(player.getUniqueId());
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             openSectionGUI(player, purchaseData.sectionKey);
                         });
                     });
                 } else {
-                    // Not enough gems
+                    // not enough gems
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         player.sendMessage("§c§lINSUFFICIENT GEMS!");
                         player.sendMessage("§7Required: §6" + String.format("%.2f", purchaseData.price) + " §7gems");
@@ -475,7 +475,7 @@ public class GemShopGUI implements Listener {
                     });
                 }
             });
-        } else if (slot == 15) { // Cancel - go back to section
+        } else if (slot == 15) { // cancel - go back to section
             String sectionKey = purchaseData.sectionKey;
             pendingPurchases.remove(player.getUniqueId());
             openSectionGUI(player, sectionKey);

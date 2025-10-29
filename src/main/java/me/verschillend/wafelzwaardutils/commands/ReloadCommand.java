@@ -34,7 +34,7 @@ public class ReloadCommand implements CommandExecutor {
         try {
             sender.sendMessage("§eReloading WafelzwaardUtils configuration...");
 
-            // Close any open GUIs to prevent issues
+            // close any open GUIs to prevent issues
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getOpenInventory().getTitle().contains("Suffixes") ||
                         player.getOpenInventory().getTitle().contains("Chatcolors")) {
@@ -42,16 +42,15 @@ public class ReloadCommand implements CommandExecutor {
                 }
             }
 
-            // Reload main config
+            // reload main config
             plugin.reloadConfig();
 
-            // Reload gem shop config
+            // reload gem shop config
             plugin.getGemShopConfig().reloadConfig();
 
             restartBroadcastLoop();
 
-            // Clear any cached data if needed
-            // For example, if you have cached suffix data, clear it here
+            // clear any cached data if needed
 
             sender.sendMessage("§aWafelzwaardUtils config has been reloaded successfully!");
             sender.sendMessage("§aGem shop config has been reloaded successfully!");

@@ -133,8 +133,8 @@ public class BlackjackGame {
         return switch (state) {
             case PLAYER_BLACKJACK -> bet * 2.5; // Blackjack pays 3:2
             case PLAYER_WIN, DEALER_BUST -> bet * 2.0; // Win pays 1:1
-            case PUSH -> bet; // Push returns bet
-            default -> 0.0; // Loss
+            case PUSH -> bet; // push returns bet
+            default -> 0.0; // loss
         };
     }
 
@@ -164,7 +164,7 @@ public class BlackjackGame {
         }
 
         public Material getMaterial() {
-            // Map suits to materials for visual representation
+            // map suits to materials for visual representation
             return switch (suit) {
                 case "♠" -> Material.BLACK_STAINED_GLASS_PANE;
                 case "♥" -> Material.RED_STAINED_GLASS_PANE;

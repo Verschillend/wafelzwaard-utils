@@ -33,9 +33,9 @@ public class DealerConfig {
 
         config = YamlConfiguration.loadConfiguration(configFile);
 
-        // Set default dealer gems if not present
+        // set default dealer gems if not present
         if (!config.contains("dealer-gems")) {
-            config.set("dealer-gems", 10000.0);
+            config.set("dealer-gems", 1000.0);
             saveConfig();
         }
     }

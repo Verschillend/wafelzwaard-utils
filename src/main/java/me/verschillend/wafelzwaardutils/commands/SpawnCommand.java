@@ -34,7 +34,7 @@ public class SpawnCommand implements CommandExecutor {
         }
 
         if (args.length > 0) {
-            // Teleport another player
+            // teleport another player
             if (!sender.hasPermission("wafelzwaard.spawn.others")) {
                 sender.sendMessage("§cYou don't have permission to teleport other players!");
                 return true;
@@ -50,7 +50,7 @@ public class SpawnCommand implements CommandExecutor {
             sender.sendMessage("§aTeleported " + targetPlayer.getName() + " to spawn!");
             targetPlayer.sendMessage("§aTeleported to spawn!");
         } else {
-            // Teleport sender
+            // teleport sender
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("§cUsage: /spawn [<player>]");
                 return true;

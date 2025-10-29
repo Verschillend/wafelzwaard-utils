@@ -36,7 +36,7 @@ public class ReferralGUI implements Listener {
 
         Inventory gui = Bukkit.createInventory(null, 54, GUI_TITLE);
 
-        // Get player's referral data
+        // get player's referral data (need to fix not generating referral code unless you do /referral code)
         plugin.getDatabaseManager().getReferralCount(player.getUniqueId()).thenAccept(referralCount -> {
             plugin.getDatabaseManager().getPlayerReferralCode(player.getUniqueId()).thenAccept(referralCode -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
@@ -48,7 +48,7 @@ public class ReferralGUI implements Listener {
     }
 
     private void setupGUI(Inventory gui, Player player, int referralCount, String referralCode, int page) {
-        // Info item (slot 4)
+        // info item (slot 4)
         gui.setItem(4, createItem(Material.BOOK,
                 "§6Your Referral Info",
                 "§7Referral Code: §e" + (referralCode != null ? referralCode : "Generating..."),
@@ -58,7 +58,7 @@ public class ReferralGUI implements Listener {
                 "§7They can use §e/refer " + (referralCode != null ? referralCode : "CODE") + "§7 to get rewards!"
         ));
 
-        // Get milestones from config
+        // get milestones from config
         ConfigurationSection milestonesSection = plugin.getConfig().getConfigurationSection("referral-milestones");
         if (milestonesSection == null) {
             gui.setItem(22, createItem(Material.BARRIER, "§cNo milestones configured", "§7Contact an administrator"));
@@ -74,14 +74,14 @@ public class ReferralGUI implements Listener {
             }
         });
 
-        //pagination - 28 items per page (4 rows of 7)
+        // 28 items per page (4 rows of 7)
         int itemsPerPage = 28;
         int totalPages = (int) Math.ceil((double) milestoneKeys.size() / itemsPerPage);
         int startIndex = page * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, milestoneKeys.size());
 
-        //milestone slots: rows of 7 items each
-        //row 1: 10-16, Row 2: 19-25, Row 3: 28-34, Row 4: 37-43
+        // milestone slots: rows of 7 items each
+        // row 1: 10-16, Row 2: 19-25, Row 3: 28-34, Row 4: 37-43
         int[] milestoneSlots = {
                 10, 11, 12, 13, 14, 15, 16,  //row 1
                 19, 20, 21, 22, 23, 24, 25,  //row 2
@@ -102,7 +102,7 @@ public class ReferralGUI implements Listener {
 
             boolean completed = referralCount >= requiredReferrals;
 
-            //choose material based on major status and completion
+            // choose material based on major status and completion
             Material material;
             if (isMajor) {
                 material = completed ? Material.EMERALD_BLOCK : Material.COAL_BLOCK;
@@ -148,7 +148,7 @@ public class ReferralGUI implements Listener {
             slotIndex++;
         }
 
-        // Navigation
+        // navigation
         if (page > 0) {
             gui.setItem(45, createItem(Material.ARROW, "§ePrevious Page", "§7Go to page " + page));
         }
@@ -157,7 +157,7 @@ public class ReferralGUI implements Listener {
             gui.setItem(53, createItem(Material.ARROW, "§eNext Page", "§7Go to page " + (page + 2)));
         }
 
-        // Close button
+        // close button
         gui.setItem(49, createItem(Material.BARRIER, "§cClose", "§7Close this menu"));
     }
 
@@ -180,7 +180,7 @@ public class ReferralGUI implements Listener {
 
         int slot = event.getSlot();
 
-        //navigation
+        // navigation
         if (slot == 45) { //previous page
             int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
             openGUI(player, Math.max(0, currentPage - 1));

@@ -24,7 +24,7 @@ public class DealerCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            // Show dealer gems
+            // show dealer gems
             double dealerGems = dealerConfig.getDealerGems();
             sender.sendMessage("§6§lDealer Gems: §e" + String.format("%.2f", dealerGems) + " gems");
             sender.sendMessage("§7Use §e/dealer <add|remove|set> <amount>§7 to manage");

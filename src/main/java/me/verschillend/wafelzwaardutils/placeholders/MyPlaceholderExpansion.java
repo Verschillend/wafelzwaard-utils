@@ -79,6 +79,7 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
             }
         }
 
+        // %wafelzwaard_bw%
         if (params.equals("bw")) {
             try {
                 String bedwars = PlaceholderAPI.setPlaceholders(player, "%bungee_bedwars-1%");
@@ -92,7 +93,7 @@ public class MyPlaceholderExpansion extends PlaceholderExpansion {
             }
         }
 
-        // %wafelzwaard_playerse%
+        // %wafelzwaard_players%
         if (params.equalsIgnoreCase("players")) {
             try {
                 int total = plugin.getDatabaseManager().getTotalPlayerCount().get();

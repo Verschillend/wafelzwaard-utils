@@ -44,20 +44,20 @@ public class Wafelzwaardutils extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Save default config
+        // save default config
         saveDefaultConfig();
 
-        // Initialize database
+        // initialize database
         databaseManager = new DatabaseManager(this);
         databaseManager.initialize();
         getLogger().info("Database initialized!");
 
-        //initialize gem shop config
+        // initialize gem shop config
         gemShopConfig = new GemShopConfig(this);
         dealerConfig = new DealerConfig(this);
         getLogger().info("Configs initialized!");
 
-        // Initialize GUI
+        // initialize GUIs
         BwGUI = new BwGUI(this);
         CCGUI = new CCGUI(this);
         suffixGUI = new SuffixGUI(this);
@@ -66,17 +66,22 @@ public class Wafelzwaardutils extends JavaPlugin {
         blackjackGUI = new BlackjackGUI(this, dealerConfig);
         getLogger().info("Guis initialized!");
 
-        // Register commands
+        // register commands
         registerCommands();
         getLogger().info("Commands registered!");
 
+        // initialize placeholder integration
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new MyPlaceholderExpansion(this).register();
             getLogger().info("PlaceholderAPI integration enabled!");
         }
+
+        // initialize simplevote integration
         if (Bukkit.getPluginManager().getPlugin("SimpleVote") != null) {
             getLogger().info("SimpleVote integration enabled!");
         }
+
+        // start vote loop if server is oneblock
         boolean oneblock = this.getConfig().getBoolean("server.oneblock", false);
         if (oneblock) {
             SimpleVote sv = (SimpleVote) Bukkit.getPluginManager().getPlugin("SimpleVote");
@@ -115,6 +120,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         return databaseManager;
     }
 
+    // GUIs
     public CCGUI getCCGUI() {
         return CCGUI;
     }
@@ -141,13 +147,13 @@ public class Wafelzwaardutils extends JavaPlugin {
                         event.getPlayer().getUniqueId(),
                         event.getPlayer().getName(),
                         '7',
-                        0.0 //default gems amount
+                        0.0 // default gems amount
                 );
 
-                //Generate referral code for new player
+                // generate referral code for new player
                 this.getDatabaseManager().generateReferralCode(event.getPlayer().getUniqueId());
             } else {
-                // heck if existing player needs a referral code
+                // check if existing player needs a referral code
                 this.getDatabaseManager().getPlayerReferralCode(event.getPlayer().getUniqueId()).thenAccept(code -> {
                     if (code == null) {
                         this.getDatabaseManager().generateReferralCode(event.getPlayer().getUniqueId());
@@ -158,14 +164,14 @@ public class Wafelzwaardutils extends JavaPlugin {
     }
 
     private void registerCommands() {
-        // Register BW command
+        // register BW command
         PluginCommand bwCommand = createCommand("bw");
         bwCommand.setExecutor(new BwCommand(this, BwGUI));
         bwCommand.setDescription("Open the BW GUI");
         bwCommand.setPermission("wafelzwaard.bw");
         getServer().getCommandMap().register("wafelzwaardutils", bwCommand);
 
-        // Register ChatColor command
+        // register ChatColor command
         PluginCommand chatcolorCommand = createCommand("chatcolor");
         chatcolorCommand.setExecutor(new ChatColorCommand(CCGUI));
         chatcolorCommand.setDescription("Open the chat color GUI");
@@ -173,7 +179,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         chatcolorCommand.setAliases(Arrays.asList("chatcolors", "cc"));
         getServer().getCommandMap().register("wafelzwaardutils", chatcolorCommand);
 
-        // Register Spawn command
+        // register Spawn command
         PluginCommand spawnCommand = createCommand("spawn");
         spawnCommand.setExecutor(new SpawnCommand(this));
         spawnCommand.setDescription("Teleport to spawn");
@@ -181,7 +187,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         spawnCommand.setUsage("/spawn [<player>]");
         getServer().getCommandMap().register("wafelzwaardutils", spawnCommand);
 
-        //suffix gui
+        // register suffix gui command
         PluginCommand suffixCommand = createCommand("suffix");
         suffixCommand.setExecutor(new SuffixCommand(suffixGUI));
         suffixCommand.setDescription("Open the suffix GUI");
@@ -190,7 +196,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         suffixCommand.setAliases(Arrays.asList("suffixes"));
         getServer().getCommandMap().register("wafelzwaardutils", suffixCommand);
 
-        //reload command
+        //register reload command
         PluginCommand reloadCommand = createCommand("wafelzwaardreload");
         reloadCommand.setExecutor(new ReloadCommand(this));
         reloadCommand.setDescription("Reload the plugin configuration");
@@ -199,7 +205,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         reloadCommand.setAliases(Arrays.asList("wzreload", "wafelsreload"));
         getServer().getCommandMap().register("wafelzwaardutils", reloadCommand);
 
-        //island invite:
+        //register island invite command
         PluginCommand inviteCommand = createCommand("invite");
         inviteCommand.setExecutor(new InviteCommand(this));
         inviteCommand.setDescription("Invite a player to your oneblock island");
@@ -207,7 +213,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         inviteCommand.setUsage("/invite");
         getServer().getCommandMap().register("wafelzwaardutils", inviteCommand);
 
-        //island kick:
+        //register island kick command
         PluginCommand kickCommand = createCommand("ikick");
         kickCommand.setExecutor(new KickCommand(this));
         kickCommand.setDescription("Kick a player from your oneblock island");
@@ -215,7 +221,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         kickCommand.setUsage("/ikick");
         getServer().getCommandMap().register("wafelzwaardutils", kickCommand);
 
-        //discord:
+        //register discord command
         PluginCommand discCommand = createCommand("discord");
         discCommand.setExecutor(new DiscordCommand(this));
         discCommand.setDescription("Join the discord");
@@ -224,7 +230,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         discCommand.setAliases(Arrays.asList("dc"));
         getServer().getCommandMap().register("wafelzwaardutils", discCommand);
 
-        //gems command
+        //register gems command
         PluginCommand gemsCommand = createCommand("gems");
         gemsCommand.setExecutor(new GemsCommand(this));
         gemsCommand.setDescription("Manage gems");
@@ -233,7 +239,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         gemsCommand.setAliases(Arrays.asList("gem"));
         getServer().getCommandMap().register("wafelzwaardutils", gemsCommand);
 
-        //Referral GUI command
+        //register referral GUI command
         PluginCommand referralCommand = createCommand("referral");
         referralCommand.setExecutor(new ReferralCommand(this, referralGUI));
         referralCommand.setDescription("Open referral GUI");
@@ -242,7 +248,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         referralCommand.setAliases(Arrays.asList("referrals", "ref"));
         getServer().getCommandMap().register("wafelzwaardutils", referralCommand);
 
-        //Refer command
+        //register refer command
         PluginCommand referCommand = createCommand("refer");
         referCommand.setExecutor(new ReferCommand(this));
         referCommand.setDescription("Use a referral code");
@@ -250,7 +256,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         referCommand.setUsage("/refer <code>");
         getServer().getCommandMap().register("wafelzwaardutils", referCommand);
 
-        //gemshop command
+        //registre gemshop command
         PluginCommand gemshopCommand = createCommand("gemshop");
         gemshopCommand.setExecutor(new GemShopCommand(this, gemShopGUI));
         gemshopCommand.setDescription("Open the gem shop");
@@ -259,7 +265,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         gemshopCommand.setAliases(Arrays.asList("store", "gshop"));
         getServer().getCommandMap().register("wafelzwaardutils", gemshopCommand);
 
-        //blackjack command
+        //register blackjack command
         PluginCommand blackjackCommand = createCommand("blackjack");
         blackjackCommand.setExecutor(new BlackjackCommand(this, blackjackGUI));
         blackjackCommand.setDescription("Play blackjack");
@@ -268,7 +274,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         blackjackCommand.setAliases(Arrays.asList("bj"));
         getServer().getCommandMap().register("wafelzwaardutils", blackjackCommand);
 
-        //dealer command
+        //register dealer command
         PluginCommand dealerCommand = createCommand("dealer");
         dealerCommand.setExecutor(new DealerCommand(this, dealerConfig));
         dealerCommand.setDescription("Manage dealer gems");
@@ -276,7 +282,7 @@ public class Wafelzwaardutils extends JavaPlugin {
         dealerCommand.setUsage("/dealer <add|remove|set> <amount>");
         getServer().getCommandMap().register("wafelzwaardutils", dealerCommand);
 
-        //troll command
+        //register troll command
         PluginCommand trollCommand = createCommand("troll");
         trollCommand.setExecutor(new TrollCommand(this));
         trollCommand.setDescription("Manage trolls");

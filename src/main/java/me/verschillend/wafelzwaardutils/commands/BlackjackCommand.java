@@ -29,7 +29,7 @@ public class BlackjackCommand implements CommandExecutor {
             return true;
         }
 
-        // Check if lobby server
+        // check if lobby server
         if (!plugin.getConfig().getBoolean("server.lobby", false)) {
             player.sendMessage("§cBlackjack is not available on this server!");
             return true;

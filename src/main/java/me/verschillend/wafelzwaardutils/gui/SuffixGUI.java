@@ -37,7 +37,7 @@ public class SuffixGUI implements Listener {
 
         Inventory gui = Bukkit.createInventory(null, 54, GUI_TITLE + " §8(Page " + (page + 1) + ")");
 
-        // Get suffixes from config
+        // get suffixes from config
         ConfigurationSection suffixesSection = plugin.getConfig().getConfigurationSection("suffixes");
         if (suffixesSection == null) {
             player.sendMessage("§cNo suffixes configured!");
@@ -45,13 +45,13 @@ public class SuffixGUI implements Listener {
         }
 
         List<String> suffixKeys = new ArrayList<>(suffixesSection.getKeys(false));
-        Collections.sort(suffixKeys); // Sort alphabetically
+        Collections.sort(suffixKeys); // sort alphabetically
 
         int totalPages = (int) Math.ceil((double) suffixKeys.size() / ITEMS_PER_PAGE);
         int startIndex = page * ITEMS_PER_PAGE;
         int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, suffixKeys.size());
 
-        // Add suffix items (slots 10-16, 19-25, 28-34, 37-43)
+        // add suffix items (slots 10-16, 19-25, 28-34, 37-43)
         int[] slots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
         int slotIndex = 0;
 
@@ -80,7 +80,7 @@ public class SuffixGUI implements Listener {
             }
         }
 
-        // Add navigation items
+        // add navigation items
         if (page > 0) {
             gui.setItem(45, createItem(Material.ARROW, "§ePrevious Page", "§7Click to go to page " + page));
         }
@@ -89,10 +89,10 @@ public class SuffixGUI implements Listener {
             gui.setItem(53, createItem(Material.ARROW, "§eNext Page", "§7Click to go to page " + (page + 2)));
         }
 
-        // Add remove suffix item
+        // add remove suffix item
         gui.setItem(48, createItem(Material.BARRIER, "§cRemove Suffix", "§7Click to remove your current suffix"));
 
-        // Add close item
+        // add close item
         gui.setItem(49, createItem(Material.RED_STAINED_GLASS_PANE, "§cClose", "§7Click to close this menu"));
 
         player.openInventory(gui);
@@ -108,7 +108,7 @@ public class SuffixGUI implements Listener {
                 lore
         ));
 
-        // Store suffix key in item for identification
+        // store suffix key in item for identification
         List<String> itemLore = new ArrayList<>(meta.getLore());
         itemLore.add("§0" + suffixKey); // Hidden identifier
         meta.setLore(itemLore);
@@ -140,7 +140,7 @@ public class SuffixGUI implements Listener {
         int slot = event.getSlot();
         String itemName = clickedItem.getItemMeta().getDisplayName();
 
-        // Handle navigation
+        // handle navigation
         if (slot == 45 && itemName.equals("§ePrevious Page")) {
             int currentPage = playerPages.getOrDefault(player.getUniqueId(), 0);
             openGUI(player, Math.max(0, currentPage - 1));
@@ -153,20 +153,20 @@ public class SuffixGUI implements Listener {
             return;
         }
 
-        // Handle close
+        // handle close
         if (slot == 49 && itemName.equals("§cClose")) {
             player.closeInventory();
             return;
         }
 
-        // Handle remove suffix
+        // handle remove suffix
         if (slot == 48 && itemName.equals("§cRemove Suffix")) {
             player.closeInventory();
             removeSuffix(player);
             return;
         }
 
-        // Handle suffix selection
+        // handle suffix selection
         if (clickedItem.getType() != Material.BARRIER && clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasLore()) {
             List<String> lore = clickedItem.getItemMeta().getLore();
             if (lore.size() >= 4) {
@@ -192,7 +192,7 @@ public class SuffixGUI implements Listener {
             return;
         }
 
-        // Execute LuckPerms command
+        // execute LuckPerms command
         String command = "lp user " + player.getName() + " meta setsuffix 1 \"" + suffix + "\"";
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 

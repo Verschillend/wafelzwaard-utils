@@ -149,7 +149,7 @@ public class DatabaseManager {
     }
 
     private void updateTables() {
-        //add missing columns if they don't exist
+        // add missing columns if they don't exist
         String[] alterStatements = {
                 "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS gems DOUBLE DEFAULT 0.0",
                 "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS referral_code VARCHAR(8) UNIQUE",
@@ -170,7 +170,7 @@ public class DatabaseManager {
                 }
             }
 
-            //ensure server_player_counts table exists
+            // ensure server_player_counts table exists
             String createServerCountTable = """
             CREATE TABLE IF NOT EXISTS server_player_counts (
                 server_name VARCHAR(32) PRIMARY KEY,
@@ -245,7 +245,7 @@ public class DatabaseManager {
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to get player color: " + e.getMessage());
             }
-            return '7'; // Default color
+            return '7'; // default color (&7 or light gray)
         });
     }
 
@@ -309,7 +309,7 @@ public class DatabaseManager {
                 stmt.setDouble(3, amount);
                 stmt.executeUpdate();
 
-                //return the new amount
+                // return the new amount
                 return getPlayerGems(uuid).join();
             } catch (SQLException e) {
                 plugin.getLogger().severe("Failed to add player gems: " + e.getMessage());
@@ -359,7 +359,7 @@ public class DatabaseManager {
                 }
             } while (referralCodeExists(code));
 
-            //update player's referral code
+            // update player's referral code
             String sql = "UPDATE player_data SET referral_code = ? WHERE uuid = ?";
             try (Connection conn = dataSource.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -395,7 +395,7 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to check referral code: " + e.getMessage());
-            return true; // Assume it exists to be safe
+            return true; // assume it exists to be safe
         }
     }
 
@@ -472,27 +472,27 @@ public class DatabaseManager {
 
                 if (referrerUuid == null) {
                     conn.rollback();
-                    return false; // Invalid referral code
+                    return false; // invalid referral code
                 }
 
                 if (referrerUuid.equals(referredUuid.toString())) {
                     conn.rollback();
-                    return false; // Can't refer yourself
+                    return false; // cant refer yourself
                 }
 
-                // Check if referred player was already referred
+                // check if referred player was already referred
                 String checkReferredSql = "SELECT referred_by FROM player_data WHERE uuid = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(checkReferredSql)) {
                     stmt.setString(1, referredUuid.toString());
                     try (ResultSet rs = stmt.executeQuery()) {
                         if (rs.next() && rs.getString("referred_by") != null) {
                             conn.rollback();
-                            return false; // Already referred
+                            return false; // already referred
                         }
                     }
                 }
 
-                // Update referred player
+                // update referred player
                 String updateReferredSql = "UPDATE player_data SET referred_by = ? WHERE uuid = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(updateReferredSql)) {
                     stmt.setString(1, referrerUuid);
@@ -500,7 +500,7 @@ public class DatabaseManager {
                     stmt.executeUpdate();
                 }
 
-                // Insert referral record
+                // insert referral record
                 String insertReferralSql = "INSERT INTO referrals (referrer_uuid, referred_uuid) VALUES (?, ?)";
                 try (PreparedStatement stmt = conn.prepareStatement(insertReferralSql)) {
                     stmt.setString(1, referrerUuid);
@@ -508,7 +508,7 @@ public class DatabaseManager {
                     stmt.executeUpdate();
                 }
 
-                // Update referrer count
+                // update referrer count
                 String updateCountSql = "UPDATE player_data SET referral_count = referral_count + 1 WHERE uuid = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(updateCountSql)) {
                     stmt.setString(1, referrerUuid);

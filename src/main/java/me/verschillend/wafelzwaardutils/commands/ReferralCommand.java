@@ -51,12 +51,12 @@ public class ReferralCommand implements CommandExecutor {
             return true;
         }
 
-        // Handle subcommands if needed
+        // handle subcommands if needed
         String subCommand = args[0].toLowerCase();
 
         switch (subCommand) {
             case "code" -> {
-                // Show player's referral code
+                // show player's referral code
                 plugin.getDatabaseManager().getPlayerReferralCode(player.getUniqueId()).thenAccept(code -> {
                     if (code != null) {
                         player.sendMessage("§eYour referral code: §6" + code);
@@ -76,7 +76,7 @@ public class ReferralCommand implements CommandExecutor {
             }
 
             case "count", "stats" -> {
-                // Show referral statistics
+                // show referral statistics
                 plugin.getDatabaseManager().getReferralCount(player.getUniqueId()).thenAccept(count -> {
                     player.sendMessage("§eYou have referred §6" + count + "§e players!");
                 });

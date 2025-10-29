@@ -26,7 +26,7 @@ public class GemsCommand implements CommandExecutor {
                 return true;
             }
 
-            //show own gems
+            // show own gems
             plugin.getDatabaseManager().getPlayerGems(player.getUniqueId()).thenAccept(gems -> {
                 player.sendMessage("§eYou have §6" + String.format("%.2f", gems) + " §egems!");
             });
