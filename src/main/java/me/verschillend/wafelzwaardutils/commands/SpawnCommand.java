@@ -28,6 +28,7 @@ public class SpawnCommand implements CommandExecutor {
         boolean lobby = plugin.getConfig().getBoolean("server.lobby", false);
         boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
         boolean fbf = plugin.getConfig().getBoolean("server.fbf", false);
+        boolean minigames = plugin.getConfig().getBoolean("server.minigames", false);
         if (!lobby && !oneblock && !fbf) {
             sender.sendMessage("§cThis command is not set up on this server! Please contact a administrator if you believe this is a error!");
             return true;
@@ -66,6 +67,7 @@ public class SpawnCommand implements CommandExecutor {
         boolean lobby = plugin.getConfig().getBoolean("server.lobby", false);
         boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
         boolean fbf = plugin.getConfig().getBoolean("server.fbf", false);
+        boolean minigames = plugin.getConfig().getBoolean("server.minigames", false);
         World world = Bukkit.getWorld("world");
         if (world == null) {
             player.sendMessage("§cWorld 'world' not found!");
@@ -80,6 +82,15 @@ public class SpawnCommand implements CommandExecutor {
         }
         else if (fbf) {
             Loc = new Location(world, -127.5, 218.0, -174.5, -180, 0);
+        }
+        else if (minigames) {
+            if (player.getWorld() == world) {
+                Loc = new Location(world, 0.5, 60.0, 0.5, -180, 0);
+            }
+            else {
+                Loc = player.getLocation();
+                player.sendMessage("§cSorry! You cant use that here. If you think this is a bug please contact a admin.");
+            }
         }
         player.teleport(Loc);
     }

@@ -81,6 +81,7 @@ public class ReloadCommand implements CommandExecutor {
         boolean oneblock = plugin.getConfig().getBoolean("server.oneblock", false);
         boolean lobby = plugin.getConfig().getBoolean("server.lobby", false);
         boolean fbf = plugin.getConfig().getBoolean("server.fbf", false);
+        boolean minigames = plugin.getConfig().getBoolean("server.minigames", false);
         serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             int count = Bukkit.getOnlinePlayers().size();
             if (oneblock) {
@@ -91,6 +92,9 @@ public class ReloadCommand implements CommandExecutor {
             }
             if (fbf) {
                 plugin.getDatabaseManager().updateServerPlayerCount("fireball-fight-1", count);
+            }
+            if (minigames) {
+                plugin.getDatabaseManager().updateServerPlayerCount("minigames", count);
             }
         }, 0L, 15 * 20L); // every 15 seconds
 

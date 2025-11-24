@@ -9,6 +9,7 @@ server:
   lobby: false
   oneblock: false
   fbf: false
+  minigames: false
   discord-link: https://discord.gg/tnbZZEQjAP
 
 broadcasts:
